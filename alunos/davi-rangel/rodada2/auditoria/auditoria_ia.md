@@ -1,7 +1,7 @@
 # Auditoria do código gerado por IA: rodada 2
 
 **Disciplina:** INF1377 – Engenharia de Requisitos
-**Código auditado:** gerado pelo Gemini 3.8 Flash (High) no Antigravity, numa conversa única, a partir de `prompt_rodada2_antigravity.md` e do PDF da ERS v1.2
+**Código auditado:** gerado pelo Gemini 3.8 Flash (High) no Antigravity, numa conversa única, a partir de [`prompts/rodada2.md`](../../prompts/rodada2.md) e do PDF da ERS v1.2
 **Referência da auditoria:** ERS v1.2
 **Auditor:** Claude (Opus 5.5)
 **Data:** 10/11/2026

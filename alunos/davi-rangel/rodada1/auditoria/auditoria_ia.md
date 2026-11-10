@@ -1,7 +1,7 @@
 # Auditoria do código gerado por IA: fluxo de reserva, pagamento e confirmação
 
 **Disciplina:** INF1377 – Engenharia de Requisitos
-**Código auditado:** gerado pelo Gemini 3.8 Flash a partir do prompt `prompt_ia_fluxo_reserva.md` e da ERS
+**Código auditado:** gerado pelo Gemini 3.8 Flash a partir do prompt [`prompts/rodada1.md`](../../prompts/rodada1.md) e da ERS
 **Referência da auditoria:** ERS v1.2
 **Auditor:** Claude (Opus 5.5), seguindo a sugestão do professor de uma IA criticar a outra
 **Data:** 10/11/2026

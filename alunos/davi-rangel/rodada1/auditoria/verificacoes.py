@@ -3,7 +3,7 @@
 Cada verificação reproduz um problema descrito em auditoria_ia.md.
 Roda num banco SQLite temporário, sem tocar no hospedagem.db do projeto.
 
-Uso (na pasta INF1377, com o venv ativo):
+Uso (na pasta rodada1, com o venv ativo):
     python auditoria/verificacoes.py
 """
 import logging
