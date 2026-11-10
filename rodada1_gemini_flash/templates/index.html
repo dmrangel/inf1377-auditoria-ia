@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Acomodações para Teste de Fluxo</h2>
+<div class="card-grid">
+    {% for a in acomodacoes %}
+    <div class="card">
+        <h3>{{ a.titulo }}</h3>
+        <p>{{ a.descricao }}</p>
+        <p>📍 <strong>Localização:</strong> {{ a.bairro }}, {{ a.cidade }}</p>
+        <p>💰 <strong>Diária:</strong> R$ {{ "%.2f"|format(a.precoNoite) }}</p>
+        {% if a.ehSuperhost %}
+            <span class="badge-superhost">⭐ Anfitrião Superhost (10% OFF na taxa)</span>
+        {% endif %}
+        <form action="/reservas/resumo" method="GET" class="mt-2">
+            <input type="hidden" name="acomodacao_id" value="{{ a.id }}">
+            <label>Check-in:</label>
+            <input type="date" name="checkin" value="2026-12-01" required>
+            <label>Check-out:</label>
+            <input type="date" name="checkout" value="2026-12-05" required>
+            <label>Hóspedes:</label>
+            <input type="number" name="hospedes" value="2" min="1" max="{{ a.capacidadeMaxima }}" required>
+            <button type="submit" class="btn-primary mt-2">Iniciar Reserva</button>
+        </form>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

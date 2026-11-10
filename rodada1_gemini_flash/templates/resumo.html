@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="box-flow">
+    <h2>1. Resumo da Estadia</h2>
+    <div class="details">
+        <h3>{{ acomodacao.titulo }}</h3>
+        <!-- RNF-05: Exibição restrita a bairro e cidade -->
+        <p>📍 <strong>Região:</strong> {{ acomodacao.bairro }}, {{ acomodacao.cidade }} - {{ acomodacao.estado }}</p>
+        <p>📅 <strong>Período:</strong> {{ checkin }} até {{ checkout }} ({{ noites }} noite{% if noites > 1 %}s{% endif %})</p>
+        <p>👥 <strong>Hóspedes:</strong> {{ hospedes }} (Limite: {{ acomodacao.capacidadeMaxima }})</p>
+    </div>
+
+    <hr>
+    <h3>Detalhamento do Preço</h3>
+    <table class="table-calc">
+        <tr>
+            <td>{{ noites }} noites x R$ {{ "%.2f"|format(acomodacao.precoNoite) }}</td>
+            <td class="text-right">R$ {{ "%.2f"|format(valores.subtotal) }}</td>
+        </tr>
+        <tr>
+            <td>Taxa de serviço (14% - RN-03)</td>
+            <td class="text-right">R$ {{ "%.2f"|format(valores.taxa_servico) }}</td>
+        </tr>
+        {% if valores.desconto_superhost > 0 %}
+        <tr class="superhost-row">
+            <td>⭐ Desconto Superhost (10% sobre taxa - RN-07)</td>
+            <td class="text-right">- R$ {{ "%.2f"|format(valores.desconto_superhost) }}</td>
+        </tr>
+        {% endif %}
+        <tr class="total-row">
+            <td><strong>Valor Total</strong></td>
+            <td class="text-right"><strong>R$ {{ "%.2f"|format(valores.valor_total) }}</strong></td>
+        </tr>
+    </table>
+
+    <button id="btn-confirmar-resumo" class="btn-primary" onclick="criarReserva({{ acomodacao.id }}, '{{ checkin }}', '{{ checkout }}', {{ hospedes }})">
+        Confirmar e Ir para Pagamento
+    </button>
+</div>
+{% endblock %}

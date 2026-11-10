@@ -1,0 +1,96 @@
+classDiagram
+    direction LR
+
+    class Usuario {
+        nome
+        email
+        senha
+        telefone
+        dataCadastro
+    }
+
+    class Anfitriao {
+        superhost
+        taxaResposta
+    }
+
+    class Hospede {
+    }
+
+    class Acomodacao {
+        titulo
+        descricao
+        precoNoite
+        capacidadeMaxima
+        qtdQuartos
+        qtdBanheiros
+        qtdCamas
+        regrasCasa
+        rua
+        numero
+        bairro
+        cidade
+        estado
+        pais
+        cep
+    }
+
+    class Reserva {
+        dataCheckInPrevista
+        dataCheckInRealizada
+        dataCheckOutPrevista
+        dataCheckOutRealizada
+        valorTotal
+    }
+
+    class Pagamento {
+        valor
+        txid
+        codigoAutorizacao
+        dataHora
+    }
+
+    class Avaliacao {
+        nota
+        comentario
+        dataAvaliacao
+    }
+
+    class HistoricoStatusReserva {
+        dataHora
+    }
+
+    class StatusReserva {
+        <<enumeration>>
+        PENDENTE
+        CONFIRMADA
+        CANCELADA
+        CONCLUIDA
+    }
+
+    class StatusPagamento {
+        <<enumeration>>
+        PROCESSANDO
+        APROVADO
+        RECUSADO
+        REEMBOLSADO
+    }
+
+    class MetodoPagamento {
+        <<enumeration>>
+        CARTAO_CREDITO
+        PIX
+    }
+
+    Usuario <|-- Anfitriao
+    Usuario <|-- Hospede
+
+    Anfitriao "1" --> "1..*" Acomodacao : gerencia
+    Hospede "1" --> "*" Reserva : realiza
+    Reserva "*" --> "1" Acomodacao : reserva a
+    Reserva "1" --> "1..*" Pagamento : é paga por
+    Reserva "1" --> "0..2" Avaliacao : gera
+    Reserva "1" --> "*" HistoricoStatusReserva : possui histórico
+    HistoricoStatusReserva "*" --> "1" StatusReserva : refere-se a
+    Pagamento --> StatusPagamento : possui status
+    Pagamento --> MetodoPagamento : utiliza método

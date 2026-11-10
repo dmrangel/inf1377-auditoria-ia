@@ -1,0 +1,173 @@
+{% extends "base.html" %}
+
+{% block title %}Resumo da Estadia (Passo 1 de 3){% endblock %}
+
+{% block content %}
+<div style="margin-bottom: 20px;">
+  <h1 style="font-size: 1.75rem; font-weight: 700; color: var(--text-main); margin-bottom: 6px;">
+    Resumo da sua Estadia
+  </h1>
+  <p style="color: var(--text-muted); font-size: 0.95rem;">
+    Confira as informações da acomodação, datas desejadas e valores antes de prosseguir para o pagamento.
+  </p>
+</div>
+
+<!-- Seletor Rápido de Acomodações de Teste para Avaliação do Professor/Testador -->
+<div class="card" style="padding: 14px 18px; background-color: #f8fafc; border-left: 4px solid var(--secondary); margin-bottom: 24px;">
+  <form method="GET" action="/resumo" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+    <div>
+      <span style="font-weight: 600; font-size: 0.9rem;">Alternar acomodação para teste de cenários:</span>
+      <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 2px;">
+        Selecione uma acomodação comum, Superhost (desconto de taxa) ou com datas ocupadas para simular erro.
+      </p>
+    </div>
+    <div style="display: flex; gap: 8px;">
+      <select name="acomodacao_id" class="form-control" style="width: auto; min-width: 280px;" onchange="this.form.submit()">
+        {% for a in acomodacoes_disponiveis %}
+          <option value="{{ a.id }}" {% if a.id == acomodacao.id %}selected{% endif %}>
+            #{{ a.id }} - {{ a.titulo[:35] }}... ({% if a.superhost %}Superhost ⭐{% else %}Padrão{% endif %})
+          </option>
+        {% endfor %}
+      </select>
+      <input type="hidden" name="check_in" value="{{ check_in }}">
+      <input type="hidden" name="check_out" value="{{ check_out }}">
+      <input type="hidden" name="num_hospedes" value="{{ num_hospedes }}">
+    </div>
+  </form>
+</div>
+
+<div class="flow-grid">
+  <!-- Coluna da Esquerda: Dados da Acomodação e Regras -->
+  <div>
+    <div class="card">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; gap: 10px;">
+        <h2 style="font-size: 1.35rem; font-weight: 700; line-height: 1.3;">{{ acomodacao.titulo }}</h2>
+        {% if acomodacao.superhost %}
+          <span class="badge badge-superhost" title="Anfitrião Superhost: taxa de serviço com 10% de desconto (RN-07)">
+            ★ SUPERHOST
+          </span>
+        {% endif %}
+      </div>
+
+      <!-- RNF-05*: Exibição apenas do bairro antes da confirmação da reserva -->
+      <div style="display: flex; align-items: center; gap: 6px; color: var(--text-muted); font-size: 0.95rem; margin-bottom: 14px;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+        </svg>
+        <span><strong>{{ acomodacao.bairro }}</strong>, {{ acomodacao.cidade }} - {{ acomodacao.estado }}</span>
+      </div>
+
+      <div class="alert alert-info" style="font-size: 0.85rem; padding: 8px 12px; margin-bottom: 16px;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="flex-shrink: 0;" aria-hidden="true">
+          <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/>
+        </svg>
+        <span>
+          <strong>Proteção de Privacidade (RNF-05*):</strong> O endereço completo (rua, número e CEP) só será revelado após a confirmação do pagamento.
+        </span>
+      </div>
+
+      <p style="color: var(--text-main); font-size: 0.95rem; margin-bottom: 18px; line-height: 1.6;">
+        {{ acomodacao.descricao }}
+      </p>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 10px; padding: 14px; background: #f8fafc; border-radius: 8px; margin-bottom: 18px;">
+        <div>
+          <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Capacidade</div>
+          <div style="font-weight: 700; font-size: 1rem;">Até {{ acomodacao.capacidadeMaxima }} pessoas</div>
+        </div>
+        <div>
+          <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Quartos</div>
+          <div style="font-weight: 700; font-size: 1rem;">{{ acomodacao.quartos }} quarto(s)</div>
+        </div>
+        <div>
+          <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Camas</div>
+          <div style="font-weight: 700; font-size: 1rem;">{{ acomodacao.camas }} cama(s)</div>
+        </div>
+        <div>
+          <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Banheiros</div>
+          <div style="font-weight: 700; font-size: 1rem;">{{ acomodacao.banheiros }} banheiro(s)</div>
+        </div>
+      </div>
+
+      <!-- Regras da Casa -->
+      <div>
+        <h3 style="font-size: 1.05rem; font-weight: 700; margin-bottom: 8px;">Regras da Casa</h3>
+        <pre style="white-space: pre-wrap; font-family: inherit; font-size: 0.9rem; color: var(--text-muted); background: #f1f5f9; padding: 12px; border-radius: 6px;">{{ acomodacao.regras }}</pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- Coluna da Direita: Seleção de Datas, Quantidade e Preço Total -->
+  <div>
+    <div class="card" style="position: sticky; top: 80px;">
+      <h2 class="card-title">Detalhes da Reserva</h2>
+
+      <!-- Alerta Dinâmico de Validação de Regras de Negócio -->
+      <div id="validationAlert" class="alert alert-danger" style="display: none;" role="alert"></div>
+
+      <form id="formResumo" method="POST" action="/resumo">
+        <input type="hidden" name="acomodacao_id" value="{{ acomodacao.id }}">
+        <input type="hidden" id="precoNoiteVal" value="{{ acomodacao.precoNoite }}">
+        <input type="hidden" id="capacidadeMaximaVal" value="{{ acomodacao.capacidadeMaxima }}">
+        <input type="hidden" id="ehSuperhostVal" value="{{ '1' if acomodacao.superhost else '0' }}">
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="checkIn">Check-in</label>
+            <input type="date" id="checkIn" name="check_in" class="form-control" value="{{ check_in }}" required>
+          </div>
+          <div class="form-group">
+            <label for="checkOut">Check-out</label>
+            <input type="date" id="checkOut" name="check_out" class="form-control" value="{{ check_out }}" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="numHospedes">Hóspedes (Máximo: {{ acomodacao.capacidadeMaxima }})</label>
+          <input type="number" id="numHospedes" name="num_hospedes" class="form-control"
+                 min="1" max="{{ acomodacao.capacidadeMaxima }}" value="{{ num_hospedes }}" required>
+          <small style="color: var(--text-muted); font-size: 0.8rem;">
+            RN-02: O número de hóspedes não pode ultrapassar a capacidade.
+          </small>
+        </div>
+
+        <!-- Discriminação de Valores Financeiros (RF-18, RN-03, RN-07) -->
+        <div class="price-breakdown">
+          <div class="price-row">
+            <span>
+              R$ {{ "%.2f"|format(acomodacao.precoNoite) }} &times; <span id="lblNumNoites">{{ calculos.num_noites }}</span> noites
+            </span>
+            <span id="valSubtotal">R$ {{ "%.2f"|format(calculos.subtotal_diarias) }}</span>
+          </div>
+
+          <div class="price-row">
+            <span>Taxa de serviço da plataforma (14%)</span>
+            <span id="valTaxaServico">R$ {{ "%.2f"|format(calculos.taxa_servico_base) }}</span>
+          </div>
+
+          <div class="price-row discount" id="rowDescontoSuperhost" {% if not acomodacao.superhost %}style="display:none;"{% endif %}>
+            <span>Desconto Superhost (10% sobre a taxa - RN-07)</span>
+            <span id="valDesconto">- R$ {{ "%.2f"|format(calculos.desconto_superhost) }}</span>
+          </div>
+
+          <div class="price-row price-total">
+            <span>Total (BRL)</span>
+            <span id="valTotal" style="color: var(--primary);">R$ {{ "%.2f"|format(calculos.valor_total) }}</span>
+          </div>
+        </div>
+
+        <button type="submit" id="btnConfirmarReserva" class="btn btn-primary btn-block" style="margin-top: 20px;">
+          Confirmar e ir para pagamento &rarr;
+        </button>
+        <p style="text-align: center; font-size: 0.8rem; color: var(--text-muted); margin-top: 10px;">
+          Ao clicar, uma reserva PENDENTE será criada e reservada por 30 minutos (RN-04).
+        </p>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/resumo.js"></script>
+{% endblock %}

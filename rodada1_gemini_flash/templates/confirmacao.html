@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="box-flow text-center">
+    <div class="success-icon">✅</div>
+    <h2>3. Reserva Confirmada!</h2>
+    <p>Seu pagamento foi aprovado e a acomodação está garantida.</p>
+
+    <div class="details text-left">
+        <p><strong>Identificador da Reserva:</strong> #{{ reserva.id }}</p>
+        <p><strong>Código de Autorização:</strong> {{ pagamento.codigoAutorizacao }}</p>
+        <p><strong>Forma de Pagamento:</strong> {{ pagamento.metodo }}</p>
+        <p><strong>Valor Total Pago:</strong> R$ {{ "%.2f"|format(pagamento.valor) }}</p>
+        <p><strong>Período da Estadia:</strong> {{ reserva.checkin }} até {{ reserva.checkOut }}</p>
+        <hr>
+        <!-- RNF-05: Endereço completo revelado apenas aqui -->
+        <div class="address-box">
+            <h4>📍 Endereço Completo do Imóvel</h4>
+            <p>{{ reserva.rua }}</p>
+            <p>{{ reserva.bairro }}, {{ reserva.cidade }} - {{ reserva.estado }}</p>
+            <p>CEP: {{ reserva.cep }}</p>
+        </div>
+        <p class="mt-2"><small>📧 Um e-mail com o comprovante fiscal e os dados da hospedagem foi enviado (RF-28).</small></p>
+    </div>
+    <a href="/" class="btn-primary mt-2">Voltar à Página Principal</a>
+</div>
+{% endblock %}

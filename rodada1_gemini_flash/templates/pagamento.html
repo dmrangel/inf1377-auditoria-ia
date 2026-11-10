@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="box-flow">
+    <h2>2. Pagamento da Reserva #{{ reserva.id }}</h2>
+    <p>Total a pagar: <strong class="price-highlight">R$ {{ "%.2f"|format(reserva.valorTotal) }}</strong></p>
+    
+    <!-- RN-04: Aviso e contagem de expiração -->
+    <div class="timer-box">⏳ Esta reserva expira em 30 minutos caso não seja aprovada (RN-04).</div>
+
+    <div class="tabs">
+        <button class="tab-btn active" onclick="alternarMetodo('cartao')">Cartão de Crédito</button>
+        <button class="tab-btn" onclick="alternarMetodo('pix')">PIX</button>
+    </div>
+
+    <!-- Pagamento via Cartão de Crédito (Síncrono) -->
+    <div id="secao-cartao" class="payment-method">
+        <form id="form-cartao" onsubmit="pagarCartao(event, {{ reserva.id }})">
+            <label>Número do Cartão:</label>
+            <input type="text" id="cartao_num" placeholder="Dica: termine em 0000 para simular recusa" required>
+            <label>Titular do Cartão:</label>
+            <input type="text" required>
+            <div class="form-row">
+                <div>
+                    <label>Validade:</label>
+                    <input type="text" placeholder="MM/AA" required>
+                </div>
+                <div>
+                    <label>CVV:</label>
+                    <input type="text" placeholder="123" required>
+                </div>
+            </div>
+            <button type="submit" id="btn-pagar-cartao" class="btn-primary mt-2">Pagar com Cartão</button>
+        </form>
+        <div id="msg-erro-cartao" class="error-box" style="display:none;"></div>
+    </div>
+
+    <!-- Pagamento via PIX (Assíncrono) -->
+    <div id="secao-pix" class="payment-method" style="display: none;">
+        <p>Gere um QR Code exclusivo para esta reserva:</p>
+        <button class="btn-secondary" onclick="gerarPix({{ reserva.id }})">Gerar Código PIX</button>
+        
+        <div id="pix-detalhes" style="display: none;" class="mt-2 text-center">
+            <img id="pix-qrcode" src="" alt="QR Code PIX">
+            <p><strong>Código Copia e Cola:</strong></p>
+            <textarea id="pix-copiacola" readonly></textarea>
+            <p><small>Aguardando confirmação do pagamento assíncrono via webhook...</small></p>
+
+            <div class="webhook-simulador">
+                <small>⚙️ Ferramenta de Simulação do Gateway Bancário:</small><br>
+                <button class="btn-small" onclick="simularWebhookPix({{ reserva.valorTotal }})">Disparar Webhook de Liquidação</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

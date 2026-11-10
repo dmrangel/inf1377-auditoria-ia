@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Plataforma de Hospedagem{% endblock %} - Fluxo de Reserva</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+  <!-- Cabeçalho Principal -->
+  <header class="site-header" role="banner">
+    <div class="header-container">
+      <a href="/" class="brand" aria-label="Página inicial da Plataforma de Hospedagem">
+        <svg width="28" height="28" viewBox="0 0 32 32" aria-hidden="true">
+          <path d="M16 1c2.008 0 3.463.963 4.751 3.269l.533 1.025c1.954 3.83 4.12 8.441 5.617 12.373 1.258 3.303 1.637 5.792.83 7.893-.822 2.14-2.73 3.44-5.23 3.44-2.189 0-4.088-.95-5.501-2.617-1.413 1.667-3.312 2.617-5.501 2.617-2.5 0-4.408-1.3-5.23-3.44-.807-2.101-.428-4.59 1.83-7.893 1.497-3.932 3.663-8.543 5.617-12.373l.533-1.025C12.537 1.963 13.992 1 16 1zm0 4.167c-1.127 0-2.14.613-3.084 2.274l-.48 1.042c-1.849 3.633-3.964 8.125-5.412 11.933-.996 2.616-1.189 4.382-.676 5.719.52 1.353 1.761 2.198 3.652 2.198 2.051 0 3.738-1.05 4.608-2.883l.542-1.15.85 1.15c.87 1.833 2.557 2.883 4.608 2.883 1.891 0 3.132-.845 3.652-2.198.513-1.337.32-3.103-.676-5.719-1.448-3.808-3.563-8.3-5.412-11.933l-.48-1.042c-.944-1.661-1.957-2.274-3.084-2.274zM16 16a3 3 0 110 6 3 3 0 010-6z"/>
+        </svg>
+        <span>HospedaFácil</span>
+      </a>
+
+      <div class="header-actions">
+        <!-- Controle de Usuário da Sessão (para testes da regra de login e permissões) -->
+        <div class="user-badge" aria-label="Usuário autenticado">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+          </svg>
+          <span>{{ session.get('usuario_nome', 'Visitante') }}</span>
+        </div>
+
+        <form action="/api/dev/switch-user" method="POST" class="user-selector-form" title="Alternar usuário de teste">
+          <label for="selectUser" class="sr-only" style="display:none;">Alternar usuário:</label>
+          <select id="selectUser" name="usuario_id" onchange="this.form.submit()">
+            <option value="1" {% if session.get('usuario_id') == 1 %}selected{% endif %}>Hóspede: Lucas Hóspede</option>
+            <option value="2" {% if session.get('usuario_id') == 2 %}selected{% endif %}>Hóspede 2: Ana Beatriz</option>
+            <option value="3" {% if session.get('usuario_id') == 3 %}selected{% endif %}>Anfitrião: Carlos (Comum)</option>
+            <option value="4" {% if session.get('usuario_id') == 4 %}selected{% endif %}>Anfitrião: Mariana (Superhost)</option>
+            <option value="0" {% if not session.get('usuario_id') %}selected{% endif %}>[Deslogado / Não Autenticado]</option>
+          </select>
+        </form>
+
+        <!-- Botão de Ajuda (Seção 3.1 da ERS: obrigatório em todas as telas) -->
+        <button type="button" class="btn btn-help" id="btnOpenHelp" aria-label="Abrir manual de ajuda e regras do fluxo">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 16h-2v-2h2v2zm1.07-7.75l-.9.92C12.45 11.9 12 12.5 12 14h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H7c0-2.76 2.24-5 5-5s5 2.24 5 5c0 .88-.36 1.68-.93 2.25z"/>
+          </svg>
+          Ajuda
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Barra de Progresso do Fluxo em 3 Passos (Seção 3.1) -->
+  <nav class="flow-progress" aria-label="Progresso da reserva">
+    <div class="progress-container">
+      <div class="progress-step {% if step == 1 %}active{% elif step > 1 %}completed{% endif %}">
+        <span class="step-num">1</span>
+        <span>Resumo da Estadia</span>
+      </div>
+      <div class="progress-step {% if step == 2 %}active{% elif step > 2 %}completed{% endif %}">
+        <span class="step-num">2</span>
+        <span>Pagamento</span>
+      </div>
+      <div class="progress-step {% if step == 3 %}active completed{% endif %}">
+        <span class="step-num">3</span>
+        <span>Confirmação</span>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Mensagens Flash -->
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div style="max-width: 1100px; margin: 16px auto 0; padding: 0 16px;">
+        {% for category, message in messages %}
+          <div class="alert alert-{{ 'danger' if category == 'error' else category }}" role="alert">
+            {{ message }}
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+
+  <!-- Conteúdo Principal da Página -->
+  <main class="main-content" role="main">
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- Modal de Ajuda Geral e Rastreabilidade das Regras -->
+  <div class="modal-overlay" id="helpModal" role="dialog" aria-modal="true" aria-labelledby="helpModalTitle">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="helpModalTitle" style="font-size: 1.2rem; font-weight: 700;">Guia de Ajuda e Regras do Fluxo (ERS v1.2)</h2>
+        <button type="button" class="close-btn" id="btnCloseHelp" aria-label="Fechar ajuda">&times;</button>
+      </div>
+      <div class="modal-body" style="font-size: 0.95rem; line-height: 1.6;">
+        <h3 style="font-size: 1rem; margin-top: 10px; color: var(--primary);">1. Resumo da Estadia (UC10)</h3>
+        <p>• <strong>RN-01:</strong> Check-out posterior ao check-in com mínimo de 1 noite.<br>
+           • <strong>RN-02:</strong> Número de hóspedes não pode ultrapassar a capacidade máxima.<br>
+           • <strong>RN-03:</strong> Taxa de serviço de 14% sobre o valor das diárias.<br>
+           • <strong>RN-07:</strong> Acomodações de Superhost recebem 10% de desconto sobre a taxa de serviço (taxa efetiva 12,6%).<br>
+           • <strong>RNF-05*:</strong> O endereço exato fica protegido (exibe apenas bairro e cidade).</p>
+
+        <h3 style="font-size: 1rem; margin-top: 14px; color: var(--primary);">2. Pagamento (UC16)</h3>
+        <p>• <strong>RN-04:</strong> Uma reserva PENDENTE expira automaticamente se o pagamento não for aprovado em 30 minutos.<br>
+           • <strong>Cartão de Crédito (Síncrono):</strong> Digite qualquer número de cartão para aprovar. Para simular recusa bancária (RF-26), use um cartão terminado em <code>0002</code> ou titular <code>RECUSADO</code>.<br>
+           • <strong>PIX (Assíncrono):</strong> O QR Code e txid único são gerados. Use o botão de teste <em>"Simular Webhook de Confirmação PIX"</em> para acionar a confirmação bancária instantaneamente.</p>
+
+        <h3 style="font-size: 1rem; margin-top: 14px; color: var(--primary);">3. Confirmação (Comprovante)</h3>
+        <p>• <strong>RF-20 / TBD-03:</strong> Reserva confirmada automaticamente após pagamento aprovado, sem aprovação manual do anfitrião.<br>
+           • <strong>RNF-05*:</strong> O endereço exato (rua, número, CEP) é revelado apenas nesta tela.<br>
+           • <strong>RF-28:</strong> Comprovante emitido e e-mails disparados ao hóspede e anfitrião.</p>
+      </div>
+    </div>
+  </div>
+
+  <footer class="site-footer" role="contentinfo">
+    <p>Engenharia de Requisitos (INF1377) — Plataforma de Hospedagem (ERS v1.2 IEEE 830)</p>
+  </footer>
+
+  <script>
+    // Gerenciador do Modal de Ajuda
+    const btnOpenHelp = document.getElementById("btnOpenHelp");
+    const btnCloseHelp = document.getElementById("btnCloseHelp");
+    const helpModal = document.getElementById("helpModal");
+
+    btnOpenHelp.addEventListener("click", () => { helpModal.style.display = "flex"; });
+    btnCloseHelp.addEventListener("click", () => { helpModal.style.display = "none"; });
+    helpModal.addEventListener("click", (e) => {
+      if (e.target === helpModal) helpModal.style.display = "none";
+    });
+  </script>
+
+  {% block scripts %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,14 @@
+# Ambientes e caches do Python
+venv/
+.venv/
+__pycache__/
+.pytest_cache/
+*.pyc
+
+# Bancos SQLite gerados ao rodar os apps
+*.db
+
+# Backups e travas do Visual Paradigm
+*.vpp.bak_*
+*.vpp.lck
+.*.lck
