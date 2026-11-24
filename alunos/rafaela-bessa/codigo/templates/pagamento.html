@@ -1,0 +1,181 @@
+{% extends "base.html" %}
+
+{% block title %}Pagamento da Reserva (Passo 2 de 3){% endblock %}
+
+{% block content %}
+<div style="margin-bottom: 20px;">
+  <h1 style="font-size: 1.75rem; font-weight: 700; color: var(--text-main); margin-bottom: 6px;">
+    Pagamento da Reserva #{{ reserva.id }}
+  </h1>
+  <p style="color: var(--text-muted); font-size: 0.95rem;">
+    Escolha como deseja pagar: cartão de crédito (aprovação síncrona) ou PIX (confirmação assíncrona).
+  </p>
+</div>
+
+<!-- Temporizador de Expiração dos 30 minutos (RN-04) -->
+<div class="timer-container" role="timer" aria-live="polite">
+  <div>
+    <div style="font-weight: 700; font-size: 1rem; color: var(--warning);">
+      Tempo restante para aprovação do pagamento:
+    </div>
+    <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 2px;">
+      RN-04: A reserva PENDENTE é cancelada automaticamente se o pagamento não for aprovado em 30 minutos.
+    </div>
+  </div>
+  <div id="timerDisplay" class="timer-digits">--:--</div>
+</div>
+
+<div class="flow-grid">
+  <!-- Coluna da Esquerda: Métodos de Pagamento (Cartão e PIX) -->
+  <div>
+    <div class="card">
+      <div class="tabs" role="tablist">
+        <button type="button" class="tab-btn active" id="tabBtnCartao" role="tab" aria-selected="true" aria-controls="paneCartao">
+          💳 Cartão de Crédito
+        </button>
+        <button type="button" class="tab-btn" id="tabBtnPix" role="tab" aria-selected="false" aria-controls="panePix">
+          💠 PIX Instantâneo
+        </button>
+      </div>
+
+      <!-- ABA 1: Cartão de Crédito (Síncrono - RF-23, RF-24, RF-25, RNF-08) -->
+      <div id="paneCartao" class="tab-pane active" role="tabpanel" aria-labelledby="tabBtnCartao">
+        <div id="cardErrorAlert" class="alert alert-danger" style="display: none;" role="alert"></div>
+
+        <form id="formCartao">
+          <div class="form-group">
+            <label for="cardHolder">Nome impresso no cartão</label>
+            <input type="text" id="cardHolder" class="form-control" placeholder="Ex: LUCAS HOSPEDE" value="LUCAS HOSPEDE" required>
+          </div>
+
+          <div class="form-group">
+            <label for="cardNumber">Número do cartão de crédito</label>
+            <input type="text" id="cardNumber" class="form-control" placeholder="0000 0000 0000 0000"
+                   maxlength="19" value="5555 4444 3333 4000" required>
+            <small style="color: var(--text-muted); font-size: 0.8rem;">
+              RNF-08: O sistema nunca salva o número completo nem CVV; apenas o token retornado pelo gateway.
+            </small>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="cardExp">Validade (MM/AA)</label>
+              <input type="text" id="cardExp" class="form-control" placeholder="12/28" maxlength="5" value="12/28" required>
+            </div>
+            <div class="form-group">
+              <label for="cardCvv">CVV (Código)</label>
+              <input type="password" id="cardCvv" class="form-control" placeholder="123" maxlength="4" value="123" required>
+            </div>
+          </div>
+
+          <!-- Guia de Teste de Cenários para o Avaliador -->
+          <div class="alert alert-info" style="font-size: 0.85rem; margin: 16px 0;">
+            <strong>Dicas de Teste do Gateway de Pagamento:</strong><br>
+            • <strong>Para Aprovar (Caminho Feliz):</strong> Mantenha o cartão terminado em <code>4000</code>.<br>
+            • <strong>Para Simular Recusa Bancária (RF-26):</strong> Altere o final do cartão para <code>0002</code> ou o titular para <code>RECUSADO</code>. Você verá o erro na tela e poderá tentar novamente sem perder a reserva.
+          </div>
+
+          <button type="submit" id="btnPagarCartao" class="btn btn-primary btn-block" style="padding: 14px;">
+            Pagar R$ {{ "%.2f"|format(reserva.valorTotal) }} no Cartão &rarr;
+          </button>
+        </form>
+      </div>
+
+      <!-- ABA 2: PIX (Assíncrono - RF-23, RF-24, UC16 passo 4b) -->
+      <div id="panePix" class="tab-pane" role="tabpanel" aria-labelledby="tabBtnPix">
+        <div id="pixLoading" style="text-align: center; padding: 30px 10px;">
+          <p style="color: var(--text-muted);">Gerando cobrança PIX no gateway...</p>
+        </div>
+
+        <div id="pixContent" style="display: none;" class="pix-area">
+          <p style="font-size: 0.95rem; color: var(--text-muted); margin-bottom: 12px;">
+            Escaneie o QR Code abaixo no app do seu banco ou utilize o código Copia e Cola:
+          </p>
+
+          <div id="pixQrContainer" class="pix-qr-container" aria-label="QR Code PIX"></div>
+
+          <div style="font-weight: 700; font-size: 1.1rem; color: var(--text-main); margin-bottom: 8px;">
+            Valor a Pagar: R$ {{ "%.2f"|format(reserva.valorTotal) }}
+          </div>
+
+          <label for="pixCopiaCola" class="sr-only" style="display:none;">Código PIX Copia e Cola:</label>
+          <input type="text" id="pixCopiaCola" class="pix-code-box" readonly>
+
+          <button type="button" id="btnCopiarPix" class="btn btn-secondary btn-block" style="max-width: 320px; margin-bottom: 16px;">
+            📋 Copiar código PIX
+          </button>
+
+          <div class="alert alert-warning" style="font-size: 0.85rem; max-width: 480px; text-align: left; width: 100%;">
+            <div style="font-weight: 600; margin-bottom: 4px;">Aguardando confirmação bancária...</div>
+            O sistema verifica automaticamente o recebimento do pagamento a cada 3 segundos via webhook do banco (Seção 3.4).
+          </div>
+
+          <!-- Botão para Simulação Imediata do Webhook Externo -->
+          <div style="margin-top: 14px; padding-top: 14px; border-top: 1px dashed var(--border); width: 100%; max-width: 480px;">
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 8px;">
+              <strong>Ambiente de Testes / Avaliação:</strong> Simule o retorno assíncrono do banco sem precisar sair da página.
+            </p>
+            <button type="button" id="btnSimularPix" class="btn btn-primary btn-block">
+              ⚡ Simular Confirmação do Banco (Webhook)
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Coluna da Direita: Resumo Financeiro da Reserva -->
+  <div>
+    <div class="card">
+      <h2 class="card-title">Resumo da Reserva</h2>
+
+      <div style="margin-bottom: 14px;">
+        <span class="badge badge-pending">STATUS: {{ reserva.status }}</span>
+      </div>
+
+      <h3 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 6px;">
+        {{ reserva.acomodacao_titulo }}
+      </h3>
+      <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 14px;">
+        {{ reserva.acomodacao_bairro }}, {{ reserva.acomodacao_cidade }} - {{ reserva.acomodacao_estado }}
+      </p>
+
+      <div style="border-top: 1px solid var(--border); padding-top: 12px; font-size: 0.9rem; line-height: 1.8;">
+        <div><strong>Hóspede:</strong> {{ reserva.hospede_nome }}</div>
+        <div><strong>Datas:</strong> {{ reserva.checkIn }} até {{ reserva.checkOut }} ({{ reserva.calculos.num_noites }} noites)</div>
+        <div><strong>Hóspedes:</strong> {{ reserva.numHospedes }}</div>
+      </div>
+
+      <div class="price-breakdown">
+        <div class="price-row">
+          <span>Diárias ({{ reserva.calculos.num_noites }}x R$ {{ "%.2f"|format(reserva.calculos.preco_noite) }})</span>
+          <span>R$ {{ "%.2f"|format(reserva.calculos.subtotal_diarias) }}</span>
+        </div>
+        <div class="price-row">
+          <span>Taxa de serviço (14%)</span>
+          <span>R$ {{ "%.2f"|format(reserva.calculos.taxa_servico_base) }}</span>
+        </div>
+        {% if reserva.calculos.eh_superhost %}
+          <div class="price-row discount">
+            <span>Desconto Superhost (10%)</span>
+            <span>- R$ {{ "%.2f"|format(reserva.calculos.desconto_superhost) }}</span>
+          </div>
+        {% endif %}
+        <div class="price-row price-total">
+          <span>Total</span>
+          <span style="color: var(--primary);">R$ {{ "%.2f"|format(reserva.valorTotal) }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  window.RESERVA_ID = {{ reserva.id }};
+  window.RESERVA_SEGUNDOS_RESTANTES = {{ reserva.segundos_restantes }};
+  window.RESERVA_STATUS = "{{ reserva.status }}";
+</script>
+<script src="/static/js/pagamento.js"></script>
+{% endblock %}

@@ -1,0 +1,22 @@
+{# Macros compartilhadas pelas telas de avaliação de estadia. #}
+
+{% macro estrelas(nota) -%}
+<span class="estrelas-exibicao" role="img" aria-label="{{ nota }} de 5 estrelas">
+  {%- for i in range(1, 6) %}<span aria-hidden="true">{{ '★' if i <= nota else '☆' }}</span>{% endfor -%}
+</span>
+{%- endmacro %}
+
+{% macro item_avaliacao(av, titulo) -%}
+<li class="item-avaliacao">
+  <div class="item-avaliacao-topo">
+    <strong>{{ titulo }}</strong>
+    {{ estrelas(av.nota) }}
+  </div>
+  {% if av.comentario %}
+    <p class="item-avaliacao-texto">{{ av.comentario }}</p>
+  {% else %}
+    <p class="item-avaliacao-texto sem-comentario">Sem comentário.</p>
+  {% endif %}
+  <small class="texto-suave">Avaliado em {{ av.dataAvaliacao|data_br }}</small>
+</li>
+{%- endmacro %}

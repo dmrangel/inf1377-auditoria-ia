@@ -1,0 +1,4 @@
+# Configuração do pytest-cov: a cobertura (RNF-15) mede só o código da aplicação.
+[run]
+omit =
+    tests/*

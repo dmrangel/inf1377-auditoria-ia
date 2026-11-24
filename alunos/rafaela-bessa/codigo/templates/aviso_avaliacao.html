@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{# Página simples de aviso das telas de avaliação (sem login, acomodação inexistente). #}
+
+{% block title %}{{ titulo }}{% endblock %}
+
+{% block content %}
+<div class="pagina-avaliacao">
+  <div class="card">
+    <h1 class="titulo-pagina">{{ titulo }}</h1>
+    <p class="texto-suave">{{ mensagem }}</p>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% from "_avaliacao_macros.html" import estrelas, item_avaliacao %}
+
+{% block title %}Avaliações de {{ acomodacao.titulo }}{% endblock %}
+
+{% block content %}
+<div class="pagina-avaliacao">
+  <p><a href="/resumo?acomodacao_id={{ acomodacao.id }}">&larr; Voltar à acomodação</a></p>
+
+  <div class="card">
+    <h1 class="titulo-pagina" style="margin-bottom: 4px;">{{ acomodacao.titulo }}</h1>
+    <!-- RNF-05*: na página pública só aparecem bairro e cidade -->
+    <div class="texto-suave">{{ acomodacao.bairro }}, {{ acomodacao.cidade }} - {{ acomodacao.estado }}
+      · Anfitrião: {{ acomodacao.anfitriao_nome }}
+      {% if acomodacao.superhost %}<span class="badge badge-superhost">★ SUPERHOST</span>{% endif %}
+    </div>
+
+    <!-- RF-15 / RF-32: nota média só das avaliações publicadas -->
+    <div class="nota-destaque">
+      {% if resumo.total > 0 %}
+        <span class="nota-destaque-valor">{{ resumo.media|nota_br }}</span>
+        <div>
+          {{ estrelas(resumo.media|round|int) }}
+          <div class="texto-suave">{{ resumo.total }} {{ 'avaliação publicada' if resumo.total == 1 else 'avaliações publicadas' }}</div>
+        </div>
+      {% else %}
+        <span class="texto-suave">Sem avaliações publicadas ainda.</span>
+      {% endif %}
+    </div>
+  </div>
+
+  <section class="card" aria-labelledby="tituloComentarios">
+    <h2 class="card-title" id="tituloComentarios">O que os hóspedes disseram</h2>
+    {% if avaliacoes %}
+      <ul class="lista-avaliacoes">
+        {% for av in avaliacoes %}
+          {{ item_avaliacao(av, av.autor_nome) }}
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p class="texto-suave">Nenhum comentário publicado.</p>
+    {% endif %}
+  </section>
+</div>
+{% endblock %}

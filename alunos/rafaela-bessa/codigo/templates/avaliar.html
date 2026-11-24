@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+{% from "_avaliacao_macros.html" import estrelas, item_avaliacao %}
+
+{% block title %}{{ 'Avaliar hóspede' if s.papel == 'ANFITRIAO' else 'Avaliar estadia' }}{% endblock %}
+
+{% block content %}
+{% set r = s.reserva %}
+{# HOSPEDE = UC18 (avalia a acomodação); ANFITRIAO = UC19 (avalia o hóspede).
+   CONFLITO (anfitrião hospedado na própria acomodação) usa o texto do hóspede e mostra o bloqueio. #}
+{% set eh_hospede = (s.papel != 'ANFITRIAO') %}
+<div class="pagina-avaliacao">
+  <p><a href="/avaliacoes">&larr; Minhas avaliações</a></p>
+
+  <h1 class="titulo-pagina">
+    {% if eh_hospede %}Como foi sua estadia?{% else %}Como foi receber {{ r.hospede_nome }}?{% endif %}
+  </h1>
+
+  <!-- Dados da reserva avaliada. O endereço exato não aparece aqui (RNF-05*): só bairro e cidade. -->
+  <div class="card">
+    <h2 class="card-title">{{ r.acomodacao_titulo }}</h2>
+    <div class="texto-suave">{{ r.acomodacao_bairro }}, {{ r.acomodacao_cidade }} - {{ r.acomodacao_estado }}</div>
+    <div style="margin-top: 8px; line-height: 1.7;">
+      <div><strong>Reserva:</strong> #{{ r.id }} · {{ r.checkIn|data_br }} a {{ r.checkOut|data_br }}</div>
+      {% if eh_hospede %}
+        <div><strong>Anfitrião:</strong> {{ r.anfitriao_nome }}</div>
+      {% elif s.papel == 'ANFITRIAO' %}
+        <div><strong>Hóspede:</strong> {{ r.hospede_nome }}
+          {% if s.nota_hospede and s.nota_hospede.total > 0 %}
+            · nota média como hóspede <strong>{{ s.nota_hospede.media|nota_br }}</strong>
+            ({{ s.nota_hospede.total }} {{ 'avaliação' if s.nota_hospede.total == 1 else 'avaliações' }})
+          {% else %}
+            · ainda sem avaliações como hóspede
+          {% endif %}
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+  {% if request.args.get('enviada') and s.minha_avaliacao %}
+    <div class="alert alert-success" role="status">
+      {% if s.publicada %}
+        Avaliação enviada e publicada, porque as duas partes já avaliaram.
+      {% else %}
+        Avaliação enviada. Ela será publicada quando a outra parte avaliar ou quando o prazo terminar em {{ s.prazo_final_br }}.
+      {% endif %}
+    </div>
+  {% endif %}
+
+  {% if s.minha_avaliacao %}
+    <!-- RF-31: o participante já avaliou; mostra o que escreveu e o estado da publicação -->
+    <section class="card" aria-labelledby="tituloMinha">
+      <h2 class="card-title" id="tituloMinha">Sua avaliação</h2>
+      <ul class="lista-avaliacoes">
+        {{ item_avaliacao(s.minha_avaliacao, 'Você') }}
+      </ul>
+      {% if s.publicada %}
+        <span class="badge badge-confirmed">Publicada</span>
+      {% else %}
+        <span class="badge badge-pending">Aguardando a outra parte ou o fim do prazo ({{ s.prazo_final_br }})</span>
+      {% endif %}
+    </section>
+  {% elif s.bloqueio %}
+    <!-- RF-30, RN-06 ou anfitrião hospedado na própria acomodação -->
+    <div class="alert alert-danger" role="alert">{{ s.bloqueio }}</div>
+  {% endif %}
+
+  {% if s.outra_avaliacao %}
+    <section class="card" aria-labelledby="tituloOutra">
+      <h2 class="card-title" id="tituloOutra">
+        {{ 'Avaliação do anfitrião sobre você' if eh_hospede else 'Avaliação do hóspede sobre a acomodação' }}
+      </h2>
+      <ul class="lista-avaliacoes">
+        {{ item_avaliacao(s.outra_avaliacao, s.outra_avaliacao.autor_nome) }}
+      </ul>
+    </section>
+  {% elif s.outra_parte_ja_avaliou and s.pode_avaliar %}
+    <div class="alert alert-info" role="status">
+      {{ r.anfitriao_nome if eh_hospede else r.hospede_nome }} já avaliou. Essa avaliação aparece quando você enviar a sua
+      ou quando o prazo terminar.
+    </div>
+  {% endif %}
+
+  {% if s.pode_avaliar %}
+    <!-- UC18 / UC19, passo 2: nota de 1 a 5 e comentário opcional (RF-29) -->
+    <section class="card" aria-labelledby="tituloForm">
+      <h2 class="card-title" id="tituloForm">
+        {{ 'Avaliar a acomodação' if eh_hospede else 'Avaliar o hóspede' }}
+      </h2>
+      <p class="{{ 'texto-alerta' if s.dias_restantes <= 2 else 'texto-suave' }}" style="margin-bottom: 14px;">
+        {% if s.dias_restantes == 0 %}Hoje é o último dia para avaliar (RN-06).
+        {% else %}Você pode avaliar até {{ s.prazo_final_br }} (faltam {{ s.dias_restantes }} dia{{ 's' if s.dias_restantes != 1 else '' }}, RN-06).{% endif %}
+      </p>
+
+      <div id="alertaAvaliacao" class="alert alert-danger" role="alert" style="display: none;"></div>
+
+      <form id="formAvaliacao" data-reserva-id="{{ r.id }}" data-comentario-max="{{ comentario_max }}" novalidate>
+        <fieldset class="form-group estrelas-campo">
+          <legend>Nota <span class="texto-suave">(obrigatória)</span></legend>
+          <div class="estrelas-input" id="estrelasInput">
+            {% set rotulos = ['Péssimo', 'Ruim', 'Regular', 'Bom', 'Excelente'] %}
+            {% for n in range(nota_minima, nota_maxima + 1) %}
+              <input type="radio" class="visually-hidden" name="nota" id="nota{{ n }}" value="{{ n }}">
+              <label for="nota{{ n }}" class="estrela-label" data-valor="{{ n }}">
+                <span aria-hidden="true">★</span>
+                <span class="visually-hidden">{{ n }} de 5 estrelas, {{ rotulos[n - 1] }}</span>
+              </label>
+            {% endfor %}
+          </div>
+          <div id="rotuloNota" class="texto-suave" aria-live="polite">Escolha de 1 a 5 estrelas.</div>
+        </fieldset>
+
+        <div class="form-group">
+          <label for="comentario">Comentário <span class="texto-suave">(opcional)</span></label>
+          <textarea id="comentario" name="comentario" class="form-control" rows="5"
+                    maxlength="{{ comentario_max }}" aria-describedby="contadorComentario"
+                    placeholder="{{ 'Conte como foi a estadia, a limpeza, a localização...' if eh_hospede else 'Conte como foi a convivência, o respeito às regras da casa...' }}"></textarea>
+          <small id="contadorComentario" class="texto-suave">0 de {{ comentario_max }} caracteres</small>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block" id="btnEnviarAvaliacao">Enviar avaliação</button>
+        <p class="texto-suave" style="text-align: center; margin-top: 8px; font-size: 0.85rem;">
+          Depois de enviada, a avaliação não pode ser alterada (RF-31).
+        </p>
+      </form>
+    </section>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/avaliacao.js"></script>
+{% endblock %}

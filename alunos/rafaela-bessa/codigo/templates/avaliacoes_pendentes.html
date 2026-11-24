@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% from "_avaliacao_macros.html" import estrelas, item_avaliacao %}
+
+{% block title %}Minhas avaliações{% endblock %}
+
+{% block content %}
+<div class="pagina-avaliacao">
+  <h1 class="titulo-pagina">Minhas avaliações</h1>
+  <p class="texto-suave" style="margin-bottom: 20px;">
+    Depois do check-out você tem 14 dias para avaliar a estadia (RN-06).
+    As avaliações ficam ocultas até as duas partes avaliarem ou o prazo terminar.
+  </p>
+
+  <!-- Convites: estadias concluídas que o usuário ainda pode avaliar (seção 4.6.2, passo 1) -->
+  <section class="card" aria-labelledby="tituloPendentes">
+    <h2 class="card-title" id="tituloPendentes">Aguardando sua avaliação ({{ pendentes|length }})</h2>
+    {% if pendentes %}
+      <ul class="lista-avaliacoes">
+        {% for p in pendentes %}
+          <li class="item-avaliacao item-pendente">
+            <div>
+              <strong>
+                {% if p.papel == 'HOSPEDE' %}Sua estadia em {{ p.acomodacao_titulo }}
+                {% else %}Hóspede {{ p.hospede_nome }} em {{ p.acomodacao_titulo }}{% endif %}
+              </strong>
+              <div class="texto-suave">
+                Reserva #{{ p.id }} · {{ p.checkIn|data_br }} a {{ p.checkOut|data_br }}
+              </div>
+              <div class="{{ 'texto-alerta' if p.dias_restantes <= 2 else 'texto-suave' }}">
+                {% if p.dias_restantes == 0 %}Hoje é o último dia para avaliar.
+                {% else %}Avalie até {{ p.prazo_final_br }} (faltam {{ p.dias_restantes }} dia{{ 's' if p.dias_restantes != 1 else '' }}).{% endif %}
+              </div>
+            </div>
+            <a class="btn btn-primary" href="/reservas/{{ p.id }}/avaliar">
+              {{ 'Avaliar estadia' if p.papel == 'HOSPEDE' else 'Avaliar hóspede' }}
+            </a>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p class="texto-suave">Nenhuma estadia aguardando sua avaliação.</p>
+    {% endif %}
+  </section>
+
+  <section class="card" aria-labelledby="tituloEnviadas">
+    <h2 class="card-title" id="tituloEnviadas">Avaliações que você escreveu ({{ enviadas|length }})</h2>
+    {% if enviadas %}
+      <ul class="lista-avaliacoes">
+        {% for av in enviadas %}
+          <li class="item-avaliacao">
+            <div class="item-avaliacao-topo">
+              <strong>
+                {% if av.papel == 'HOSPEDE' %}{{ av.acomodacao_titulo }}
+                {% else %}Hóspede {{ av.hospede_nome }}{% endif %}
+              </strong>
+              {{ estrelas(av.nota) }}
+            </div>
+            {% if av.comentario %}<p class="item-avaliacao-texto">{{ av.comentario }}</p>{% endif %}
+            <small class="texto-suave">Reserva #{{ av.reserva_id }} · enviada em {{ av.dataAvaliacao|data_br }}</small>
+            {% if av.publicada %}
+              <span class="badge badge-confirmed">Publicada</span>
+            {% else %}
+              <span class="badge badge-pending">Aguardando a outra parte ou o fim do prazo</span>
+            {% endif %}
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p class="texto-suave">Você ainda não escreveu avaliações.</p>
+    {% endif %}
+  </section>
+
+  <section class="card" aria-labelledby="tituloRecebidas">
+    <h2 class="card-title" id="tituloRecebidas">Avaliações sobre você ({{ recebidas|length }})</h2>
+    {% if recebidas %}
+      <ul class="lista-avaliacoes">
+        {% for av in recebidas %}
+          {{ item_avaliacao(av, (av.autor_nome ~ ' sobre a sua estadia em ' ~ av.acomodacao_titulo) if av.papel == 'HOSPEDE' else (av.autor_nome ~ ' sobre ' ~ av.acomodacao_titulo)) }}
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p class="texto-suave">Nenhuma avaliação publicada sobre você ainda.</p>
+    {% endif %}
+  </section>
+</div>
+{% endblock %}
