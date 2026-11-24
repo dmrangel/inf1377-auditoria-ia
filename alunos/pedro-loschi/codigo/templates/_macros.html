@@ -1,0 +1,23 @@
+{# Macros das telas de cancelamento e reembolso (UC12) #}
+
+{% macro badge_status(status) -%}
+  {%- set classes = {
+    "PENDENTE": "badge-pending",
+    "CONFIRMADA": "badge-confirmed",
+    "CANCELADA": "badge-cancelled",
+    "CONCLUIDA": "badge-done",
+    "PROCESSANDO": "badge-pending",
+    "APROVADO": "badge-confirmed",
+    "RECUSADO": "badge-cancelled",
+    "REEMBOLSADO": "badge-refund"
+  } -%}
+  <span class="badge {{ classes.get(status, 'badge-done') }}">{{ status }}</span>
+{%- endmacro %}
+
+{% macro metodo(m) -%}
+  {{ 'Cartão de crédito' if m == 'CARTAO_CREDITO' else ('PIX' if m == 'PIX' else (m or '-')) }}
+{%- endmacro %}
+
+{% macro dinheiro(v) -%}
+  R$ {{ "%.2f"|format(v or 0) }}
+{%- endmacro %}

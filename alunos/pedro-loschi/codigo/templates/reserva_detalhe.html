@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+{% from "_macros.html" import badge_status, metodo, dinheiro %}
+
+{% block title %}Reserva #{{ reserva.id }}{% endblock %}
+
+{% block content %}
+<p style="margin-bottom: 12px;"><a href="/reservas">&larr; Voltar para Minhas reservas</a></p>
+
+<div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; flex-wrap: wrap; margin-bottom: 20px;">
+  <div>
+    <h1 style="font-size: 1.75rem; font-weight: 700; margin-bottom: 6px;">Reserva #{{ reserva.id }}</h1>
+    <p style="color: var(--text-muted); font-size: 0.95rem;">
+      Você está vendo esta reserva como <strong>{{ 'hóspede' if papel == 'HOSPEDE' else 'anfitrião' }}</strong>.
+    </p>
+  </div>
+  <div>{{ badge_status(reserva.status) }}</div>
+</div>
+
+<div class="flow-grid">
+  <div>
+    <div class="card">
+      <h2 class="card-title">Estadia</h2>
+      <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 6px;">{{ reserva.acomodacao_titulo }}</h3>
+      {% if reserva.acomodacao_rua %}
+        <!-- RNF-05*: endereço exato só com a reserva CONFIRMADA -->
+        <p style="font-size: 0.95rem; margin-bottom: 12px;">
+          {{ reserva.acomodacao_rua }}, {{ reserva.acomodacao_numero }} - {{ reserva.acomodacao_bairro }},
+          {{ reserva.acomodacao_cidade }} - {{ reserva.acomodacao_estado }} (CEP {{ reserva.acomodacao_cep }})
+        </p>
+      {% else %}
+        <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 12px;">
+          {{ reserva.acomodacao_bairro }}, {{ reserva.acomodacao_cidade }} - {{ reserva.acomodacao_estado }}
+          <br><small>O endereço completo só aparece enquanto a reserva está confirmada (RNF-05*).</small>
+        </p>
+      {% endif %}
+      <div style="line-height: 1.8; font-size: 0.95rem;">
+        <div><strong>Check-in:</strong> {{ reserva.checkIn|data_br }} (a partir das 14:00)</div>
+        <div><strong>Check-out:</strong> {{ reserva.checkOut|data_br }} (até as 11:00)</div>
+        <div><strong>Hóspedes:</strong> {{ reserva.numHospedes }}</div>
+        <div><strong>Hóspede:</strong> {{ reserva.hospede_nome }}</div>
+        <div><strong>Anfitrião:</strong> {{ reserva.anfitriao_nome }}
+          {% if reserva.anfitriao_superhost %}<span class="badge badge-superhost">Superhost</span>{% endif %}</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2 class="card-title">Pagamentos e reembolsos (RF-24, RF-25)</h2>
+      {% if reserva.pagamentos %}
+      <div class="table-wrap">
+        <table class="table-reservas">
+          <caption class="sr-only">Pagamentos e reembolsos da reserva</caption>
+          <thead>
+            <tr>
+              <th scope="col">Tipo</th>
+              <th scope="col">Método</th>
+              <th scope="col">Valor</th>
+              <th scope="col">Status</th>
+              <th scope="col">Identificador (txid)</th>
+              <th scope="col">Data e hora</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for p in reserva.pagamentos %}
+            <tr>
+              <td>{{ 'Reembolso' if p.status == 'REEMBOLSADO' else 'Pagamento' }}</td>
+              <td>{{ metodo(p.metodo) }}</td>
+              <td>{{ ('- ' if p.status == 'REEMBOLSADO' else '') }}{{ dinheiro(p.valor) }}</td>
+              <td>{{ badge_status(p.status) }}</td>
+              <td><code style="font-size: 0.8rem;">{{ p.txid }}</code>
+                {% if p.codigoAutorizacao %}<br><small>Autorização: {{ p.codigoAutorizacao }}</small>{% endif %}</td>
+              <td>{{ p.dataHora|datahora_br }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+        <p style="color: var(--text-muted);">Nenhum pagamento registrado para esta reserva.</p>
+      {% endif %}
+    </div>
+
+    <div class="card">
+      <h2 class="card-title">Histórico de status (RNF-22)</h2>
+      <ol style="padding-left: 20px; font-size: 0.92rem; line-height: 1.8;">
+        {% for h in historico %}
+          <li>
+            {{ h.dataHora|datahora_br }}:
+            {{ h.statusAnterior or 'início' }} &rarr; <strong>{{ h.statusNovo }}</strong>
+            ({{ h.responsavel_nome or 'automático (sistema ou gateway)' }})
+          </li>
+        {% endfor %}
+      </ol>
+    </div>
+  </div>
+
+  <div>
+    <div class="card">
+      <h2 class="card-title">Valores</h2>
+      <div class="price-breakdown" style="border-top: none; margin-top: 0; padding-top: 0;">
+        <div class="price-row">
+          <span>Diárias ({{ reserva.calculos.num_noites }} x {{ dinheiro(reserva.calculos.preco_noite) }})</span>
+          <span>{{ dinheiro(reserva.calculos.subtotal_diarias) }}</span>
+        </div>
+        <div class="price-row">
+          <span>Taxa de serviço (14%)</span>
+          <span>{{ dinheiro(reserva.calculos.taxa_servico_base) }}</span>
+        </div>
+        {% if reserva.calculos.eh_superhost %}
+        <div class="price-row discount">
+          <span>Desconto superhost (10% da taxa)</span>
+          <span>- {{ dinheiro(reserva.calculos.desconto_superhost) }}</span>
+        </div>
+        {% endif %}
+        <div class="price-row price-total">
+          <span>Total da reserva</span>
+          <span>{{ dinheiro(reserva.valorTotal) }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2 class="card-title">Ações</h2>
+      {% if motivo_nao_cancelavel %}
+        <div class="alert alert-info" role="status">{{ motivo_nao_cancelavel }}</div>
+      {% else %}
+        <a href="/reservas/{{ reserva.id }}/cancelar" class="btn btn-danger btn-block">Cancelar reserva</a>
+        <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 8px;">
+          Antes de confirmar, você verá quanto será reembolsado.
+        </p>
+      {% endif %}
+      {% if papel == 'HOSPEDE' and reserva.status == 'PENDENTE' %}
+        <a href="/pagamento/{{ reserva.id }}" class="btn btn-secondary btn-block" style="margin-top: 10px;">Ir para o pagamento</a>
+      {% endif %}
+      {% if papel == 'HOSPEDE' and reserva.status == 'CONFIRMADA' %}
+        <a href="/confirmacao/{{ reserva.id }}" class="btn btn-secondary btn-block" style="margin-top: 10px;">Ver comprovante</a>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

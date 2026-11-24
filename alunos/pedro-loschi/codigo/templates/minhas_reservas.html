@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% from "_macros.html" import badge_status, dinheiro %}
+
+{% block title %}Minhas reservas{% endblock %}
+
+{% block content %}
+<div style="margin-bottom: 20px;">
+  <h1 style="font-size: 1.75rem; font-weight: 700; margin-bottom: 6px;">Minhas reservas</h1>
+  <p style="color: var(--text-muted); font-size: 0.95rem;">
+    Abra uma reserva para ver os detalhes. Reservas pendentes ou confirmadas podem ser canceladas
+    pelo hóspede ou pelo anfitrião da acomodação.
+  </p>
+</div>
+
+{% macro tabela(reservas, mostrar_hospede) %}
+  {% if reservas %}
+  <div class="table-wrap">
+    <table class="table-reservas">
+      <caption class="sr-only">Lista de reservas</caption>
+      <thead>
+        <tr>
+          <th scope="col">Reserva</th>
+          <th scope="col">Acomodação</th>
+          {% if mostrar_hospede %}<th scope="col">Hóspede</th>{% else %}<th scope="col">Anfitrião</th>{% endif %}
+          <th scope="col">Período</th>
+          <th scope="col">Valor</th>
+          <th scope="col">Status</th>
+          <th scope="col">Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for r in reservas %}
+        <tr>
+          <td><strong>#{{ r.id }}</strong></td>
+          <td>
+            {{ r.acomodacao_titulo }}<br>
+            <small style="color: var(--text-muted);">{{ r.acomodacao_bairro }}, {{ r.acomodacao_cidade }}</small>
+          </td>
+          <td>{{ r.hospede_nome if mostrar_hospede else r.anfitriao_nome }}</td>
+          <td>{{ r.checkIn|data_br }} a {{ r.checkOut|data_br }}</td>
+          <td>{{ dinheiro(r.valorTotal) }}</td>
+          <td>{{ badge_status(r.status) }}</td>
+          <td style="white-space: nowrap;">
+            <a href="/reservas/{{ r.id }}" class="btn btn-secondary btn-sm" aria-label="Ver reserva {{ r.id }}">Ver</a>
+            {% if r.pode_cancelar %}
+              <a href="/reservas/{{ r.id }}/cancelar" class="btn btn-danger btn-sm" aria-label="Cancelar reserva {{ r.id }}">Cancelar</a>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+    <p style="color: var(--text-muted);">Nenhuma reserva encontrada.</p>
+  {% endif %}
+{% endmacro %}
+
+<div class="card">
+  <h2 class="card-title">Reservas que fiz como hóspede</h2>
+  {{ tabela(como_hospede, False) }}
+</div>
+
+<div class="card">
+  <h2 class="card-title">Reservas recebidas nas minhas acomodações</h2>
+  {{ tabela(como_anfitriao, True) }}
+</div>
+
+<!-- Simulação do gateway de pagamento para os cenários de erro do reembolso -->
+<div class="card" style="background-color: #f8fafc; border-left: 4px solid var(--secondary);">
+  <h2 class="card-title" style="font-size: 1.05rem;">Ambiente de testes: gateway de reembolso simulado</h2>
+  <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 10px;">
+    Modo atual: <strong>{{ modo_gateway }}</strong>. No modo INDISPONIVEL, o gateway não responde e
+    nenhum cancelamento com reembolso é concluído (a reserva fica como estava).
+    Os demais cenários de teste estão no README.
+  </p>
+  <form action="/api/dev/gateway-reembolso" method="POST" style="display: flex; gap: 8px; flex-wrap: wrap;">
+    <button type="submit" name="modo" value="NORMAL" class="btn btn-secondary btn-sm">Gateway normal</button>
+    <button type="submit" name="modo" value="INDISPONIVEL" class="btn btn-secondary btn-sm">Gateway indisponível</button>
+  </form>
+</div>
+{% endblock %}

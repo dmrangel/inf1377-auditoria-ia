@@ -1,18 +1,20 @@
-# Pedro Loschi: [funcionalidade]
+# Pedro Loschi: Cancelamento e reembolso
 
 [← Voltar à página do grupo](../../README.md)
 
 | | |
 |---|---|
-| **Funcionalidade** | [nome da funcionalidade] |
-| **Onde está na ERS** | [seções, regras de negócio e casos de uso] |
-| **IA geradora** | [ferramenta e modelo, por exemplo Gemini 3.8 Flash no Antigravity] |
-| **IA auditora** | [ferramenta e modelo, diferente da geradora] |
-| **Status** | A fazer |
+| **Funcionalidade** | Cancelamento de reserva e reembolso, acrescentados ao fluxo de reserva, pagamento e confirmação do Davi (rodada 2) |
+| **Onde está na ERS** | RF-21, RF-25 e RF-27; seção 4.4.2 (sequência 4) e 4.5.1; RN-05; UC12 (Cancelar reserva) |
+| **IA geradora** | Claude (Opus 5.5), numa sessão separada do Claude |
+| **IA auditora** | A definir (de outra empresa, por exemplo ChatGPT/Codex ou Gemini) |
+| **Status** | Geração concluída; auditoria pendente |
 
 ## Resultado
 
-[Um parágrafo: o que a IA entregou, quantos problemas a auditoria encontrou, quais os mais graves e se algum veio de uma lacuna da ERS.]
+Geração concluída: código em `codigo/`, que parte de uma cópia de `alunos/davi-rangel/rodada2/`. A IA acrescentou `cancelamento.py`, três telas (minhas reservas, detalhe da reserva e confirmação do cancelamento), rotas de API, a simulação do reembolso no gateway e 36 testes novos. A suíte inteira termina com 50 testes aprovados e 1 falha esperada (`xfail`); os 15 testes originais do fluxo de reserva continuam iguais e agora usam um banco temporário, sem apagar o banco do app. A falha esperada é proposital: um PIX pago depois do cancelamento reconfirma a reserva, e corrigir isso exigiria mudar o fluxo de reserva, o que o prompt proibia. A IA registrou 14 ambiguidades da ERS na Seção 8 de [`codigo/README.md`](codigo/README.md).
+
+A auditoria ainda não foi feita.
 
 ## Arquivos
 
@@ -21,28 +23,24 @@ pedro-loschi/
 ├── README.md              esta página
 ├── prompts/
 │   ├── geracao.md         prompt enviado à IA geradora
-│   └── auditoria.md       prompt enviado à IA auditora
-├── prints/                capturas das conversas (01.png, 02.png, ...)
+│   └── auditoria.md       prompt para a IA auditora
 ├── codigo/                código gerado pela IA
-├── interacao_ia/          conversas completas exportadas
-└── auditoria/             relatório da auditoria
+├── interacao_ia/          registro da conversa de geração
+└── auditoria/             relatório da auditoria (pendente)
 ```
 
 ## Registro da interação com a IA
 
-- **Geração:** [link para a conversa exportada em `interacao_ia/`]
-- **Auditoria:** [link para a conversa exportada em `interacao_ia/`]
-
-## Auditoria
-
-[Link para `auditoria/auditoria_ia.md` e um resumo dos problemas mais graves.]
-
-## Conversa em imagens
-
-**1. [O que aparece no print.]**
-
-<!-- Coloque os prints em prints/ e troque esta linha por: ![Print 1](prints/01.png) -->
+- **Geração:** [`interacao_ia/registro_geracao.md`](interacao_ia/registro_geracao.md). O ambiente usado não grava o log da conversa em disco, então não foi possível exportá-la com `ferramentas/exportar_claude_code.py`. O registro foi escrito pela própria IA geradora logo depois da resposta final: o plano e a resposta final estão transcritos, e as 40 ações intermediárias estão resumidas. O arquivo avisa isso no topo.
+- **Auditoria:** pendente.
 
 ## Como rodar
 
-[Comandos para rodar o código gerado e os testes.]
+```bash
+cd alunos/pedro-loschi/codigo
+pip install -r requirements.txt
+python app.py          # http://127.0.0.1:5000, menu "Minhas reservas"
+python -m pytest       # testes, com banco separado do app
+```
+
+Os cenários de cancelamento (caminho feliz e erros) estão na Seção 8.3 de [`codigo/README.md`](codigo/README.md).

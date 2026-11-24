@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+
+{% block title %}Comprovante de Reserva Confirmada (Passo 3 de 3){% endblock %}
+
+{% block content %}
+<div style="max-width: 800px; margin: 0 auto;">
+  <!-- Banner de Sucesso da Confirmação -->
+  <div class="card" style="text-align: center; border-top: 6px solid var(--success); padding: 32px 24px;">
+    <div style="width: 64px; height: 64px; background: var(--success-bg); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; color: var(--success);">
+      <svg width="36" height="36" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+      </svg>
+    </div>
+
+    <span class="badge badge-confirmed" style="margin-bottom: 8px;">RESERVA CONFIRMADA (RF-20)</span>
+    <h1 style="font-size: 1.85rem; font-weight: 800; color: var(--text-main); margin-bottom: 8px;">
+      Tudo pronto! Sua hospedagem está confirmada.
+    </h1>
+    <p style="color: var(--text-muted); font-size: 1.05rem;">
+      Código da Reserva: <strong>#{{ reserva.id }}</strong>
+    </p>
+
+    <!-- RF-28: Notificação de envio do comprovante por e-mail -->
+    <div class="alert alert-success" style="margin-top: 20px; text-align: left; font-size: 0.95rem;">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" style="flex-shrink: 0;" aria-hidden="true">
+        <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+      </svg>
+      <div>
+        <strong>Comprovante enviado por e-mail (RF-28):</strong> Uma cópia detalhada deste comprovante foi enviada para <strong>{{ reserva.hospede_email }}</strong> e o anfitrião já foi notificado.
+      </div>
+    </div>
+  </div>
+
+  <!-- RNF-05*: Endereço Exato Liberado Pós-Confirmação -->
+  <div class="card" style="border-left: 4px solid var(--success);">
+    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" style="color: var(--success);" aria-hidden="true">
+        <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+      </svg>
+      <h2 style="font-size: 1.25rem; font-weight: 700;">Endereço Completo da Acomodação (RNF-05*)</h2>
+    </div>
+    <div class="alert alert-info" style="font-size: 0.85rem; margin-bottom: 14px;">
+      <strong>Conformidade com RNF-05*:</strong> O endereço exato foi liberado exclusivamente agora que a reserva está com status <code>CONFIRMADA</code>.
+    </div>
+
+    <div style="background: #f8fafc; padding: 16px; border-radius: 8px; line-height: 1.7; font-size: 1rem;">
+      <div><strong>Imóvel:</strong> {{ reserva.acomodacao_titulo }}</div>
+      <div><strong>Logradouro:</strong> {{ reserva.acomodacao_rua }}, {{ reserva.acomodacao_numero }}</div>
+      <div><strong>Bairro:</strong> {{ reserva.acomodacao_bairro }}</div>
+      <div><strong>Cidade / Estado:</strong> {{ reserva.acomodacao_cidade }} - {{ reserva.acomodacao_estado }}</div>
+      <div><strong>CEP:</strong> {{ reserva.acomodacao_cep }}</div>
+    </div>
+  </div>
+
+  <!-- Detalhes da Estadia e Contato do Anfitrião -->
+  <div class="card">
+    <h2 class="card-title">Informações da Estadia e Anfitrião</h2>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 18px;">
+      <div style="background: #f8fafc; padding: 14px; border-radius: 8px;">
+        <span style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase;">Check-in</span>
+        <div style="font-size: 1.1rem; font-weight: 700;">{{ reserva.checkIn }}</div>
+        <small style="color: var(--text-muted);">A partir das 14:00</small>
+      </div>
+      <div style="background: #f8fafc; padding: 14px; border-radius: 8px;">
+        <span style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase;">Check-out</span>
+        <div style="font-size: 1.1rem; font-weight: 700;">{{ reserva.checkOut }}</div>
+        <small style="color: var(--text-muted);">Até as 11:00</small>
+      </div>
+    </div>
+
+    <div style="line-height: 1.8; font-size: 0.95rem; margin-bottom: 16px;">
+      <div><strong>Total de Noites:</strong> {{ reserva.calculos.num_noites }} noites</div>
+      <div><strong>Hóspedes:</strong> {{ reserva.numHospedes }} pessoa(s)</div>
+      <div><strong>Hóspede Principal:</strong> {{ reserva.hospede_nome }} ({{ reserva.hospede_telefone }})</div>
+      <div>
+        <strong>Anfitrião Responsável:</strong> {{ reserva.anfitriao_nome }}
+        {% if reserva.anfitriao_superhost %}<span class="badge badge-superhost">Superhost ★</span>{% endif %}
+      </div>
+      <div><strong>Contato do Anfitrião:</strong> {{ reserva.anfitriao_email }} | {{ reserva.anfitriao_telefone }}</div>
+    </div>
+
+    <h3 style="font-size: 1rem; font-weight: 700; margin-bottom: 8px;">Regras da Casa a Respeitar</h3>
+    <pre style="white-space: pre-wrap; font-family: inherit; font-size: 0.85rem; color: var(--text-muted); background: #f1f5f9; padding: 12px; border-radius: 6px;">{{ reserva.acomodacao_regras }}</pre>
+  </div>
+
+  <!-- Dados da Transação de Pagamento (RF-24) -->
+  <div class="card">
+    <h2 class="card-title">Comprovante de Pagamento (RF-24)</h2>
+
+    {% if reserva.pagamento_aprovado %}
+      <div style="background: #f8fafc; padding: 16px; border-radius: 8px; font-size: 0.95rem; line-height: 1.8;">
+        <div><strong>Status do Pagamento:</strong> <span class="badge badge-confirmed">{{ reserva.pagamento_aprovado.status }}</span></div>
+        <div><strong>Método Utilizado:</strong> {{ 'Cartão de Crédito' if reserva.pagamento_aprovado.metodo == 'CARTAO_CREDITO' else 'PIX Instantâneo' }}</div>
+        <div><strong>Identificador da Transação (txid):</strong> <code>{{ reserva.pagamento_aprovado.txid }}</code></div>
+        {% if reserva.pagamento_aprovado.codigoAutorizacao %}
+          <div><strong>Código de Autorização:</strong> <code>{{ reserva.pagamento_aprovado.codigoAutorizacao }}</code></div>
+        {% endif %}
+        <div><strong>Data e Hora da Transação:</strong> {{ reserva.pagamento_aprovado.dataHora }}</div>
+      </div>
+    {% endif %}
+
+    <div class="price-breakdown" style="margin-top: 16px;">
+      <div class="price-row">
+        <span>Diárias ({{ reserva.calculos.num_noites }} noites):</span>
+        <span>R$ {{ "%.2f"|format(reserva.calculos.subtotal_diarias) }}</span>
+      </div>
+      <div class="price-row">
+        <span>Taxa de serviço (14%):</span>
+        <span>R$ {{ "%.2f"|format(reserva.calculos.taxa_servico_base) }}</span>
+      </div>
+      {% if reserva.calculos.eh_superhost %}
+        <div class="price-row discount">
+          <span>Desconto Superhost (10% sobre taxa):</span>
+          <span>- R$ {{ "%.2f"|format(reserva.calculos.desconto_superhost) }}</span>
+        </div>
+      {% endif %}
+      <div class="price-row price-total">
+        <span>Valor Total Pago</span>
+        <span style="color: var(--success);">R$ {{ "%.2f"|format(reserva.valorTotal) }}</span>
+      </div>
+    </div>
+
+    <!-- Botões de Ação Final -->
+    <div style="display: flex; gap: 12px; margin-top: 24px; flex-wrap: wrap;">
+      <button type="button" class="btn btn-secondary" onclick="window.print()" style="flex: 1;">
+        🖨️ Imprimir Comprovante
+      </button>
+      <a href="/resumo" class="btn btn-primary" style="flex: 1;">
+        Iniciar Nova Reserva &rarr;
+      </a>
+    </div>
+  </div>
+</div>
+{% endblock %}

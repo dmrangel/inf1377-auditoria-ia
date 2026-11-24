@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+{% from "_macros.html" import badge_status, metodo, dinheiro %}
+
+{% block title %}Cancelar reserva #{{ reserva.id }}{% endblock %}
+
+{% block content %}
+{% set r = previa.reembolso %}
+<p style="margin-bottom: 12px;"><a href="/reservas/{{ reserva.id }}">&larr; Voltar para a reserva</a></p>
+
+<div style="margin-bottom: 20px;">
+  <h1 style="font-size: 1.75rem; font-weight: 700; margin-bottom: 6px;">Cancelar a reserva #{{ reserva.id }}</h1>
+  <p style="color: var(--text-muted); font-size: 0.95rem;">
+    Confira o valor do reembolso antes de confirmar. O cancelamento não pode ser desfeito.
+  </p>
+</div>
+
+<div class="flow-grid">
+  <div>
+    <!-- UC12 passo 2: valor de reembolso conforme a política -->
+    <div class="card">
+      <h2 class="card-title">Reembolso pela política (RN-05)</h2>
+
+      {% if r.regra == 'SEM_PAGAMENTO' %}
+        <div class="alert alert-info" role="status">{{ r.descricao_regra }}</div>
+      {% else %}
+        {% if previa.papel == 'HOSPEDE' %}
+          <div class="policy-option {% if r.regra == 'HOSPEDE_INTEGRAL' %}applied{% endif %}">
+            <strong>Até 48 horas antes do check-in:</strong> reembolso integral do valor pago.
+            {% if r.regra == 'HOSPEDE_INTEGRAL' %}<span class="badge badge-confirmed">Aplicada</span>{% endif %}
+          </div>
+          <div class="policy-option {% if r.regra == 'HOSPEDE_PARCIAL' %}applied{% endif %}">
+            <strong>Menos de 48 horas antes do check-in:</strong> reembolso de 50% das diárias; a taxa de serviço não é devolvida.
+            {% if r.regra == 'HOSPEDE_PARCIAL' %}<span class="badge badge-confirmed">Aplicada</span>{% endif %}
+          </div>
+          <p style="font-size: 0.88rem; color: var(--text-muted); margin: 6px 0 14px;">
+            Check-in em {{ r.instante_checkin|datahora_br }}. O reembolso integral vale até
+            <strong>{{ r.prazo_reembolso_integral|datahora_br }}</strong>.
+            {% if r.horas_ate_checkin >= 0 %}
+              Faltam {{ r.horas_ate_checkin }} horas para o check-in.
+            {% else %}
+              A estadia já começou.
+            {% endif %}
+          </p>
+        {% else %}
+          <div class="policy-option applied">
+            <strong>Cancelamento pelo anfitrião (UC12, fluxo 2a):</strong> o hóspede recebe de volta todo o valor pago.
+            <span class="badge badge-confirmed">Aplicada</span>
+          </div>
+        {% endif %}
+
+        <div class="price-breakdown">
+          <div class="price-row">
+            <span>Valor pago ({{ metodo(r.metodo_original) }})</span>
+            <span>{{ dinheiro(r.valor_pago) }}</span>
+          </div>
+          <div class="price-row">
+            <span>Valor das diárias</span>
+            <span>{{ dinheiro(r.valor_diarias) }}</span>
+          </div>
+          <div class="price-row">
+            <span>Fica retido</span>
+            <span>{{ dinheiro(r.valor_retido) }}</span>
+          </div>
+          <div class="price-row price-total">
+            <span>Reembolso ao hóspede</span>
+            <span style="color: var(--success);">{{ dinheiro(r.valor_reembolso) }}</span>
+          </div>
+        </div>
+      {% endif %}
+
+      <div id="avisoPrazo" class="alert alert-warning" role="alert" style="display: none; margin-top: 14px;"></div>
+    </div>
+  </div>
+
+  <div>
+    <div class="card">
+      <h2 class="card-title">Reserva</h2>
+      <div style="line-height: 1.8; font-size: 0.95rem; margin-bottom: 14px;">
+        <div><strong>{{ reserva.acomodacao_titulo }}</strong></div>
+        <div>{{ reserva.acomodacao_bairro }}, {{ reserva.acomodacao_cidade }}</div>
+        <div>{{ reserva.checkIn|data_br }} a {{ reserva.checkOut|data_br }} ({{ reserva.calculos.num_noites }} noites)</div>
+        <div>Status atual: {{ badge_status(previa.status_atual) }}</div>
+        <div>Você cancela como: <strong>{{ 'hóspede' if previa.papel == 'HOSPEDE' else 'anfitrião' }}</strong></div>
+      </div>
+
+      <!-- UC12 passo 3: o usuário confirma -->
+      <form id="formCancelar" method="POST" action="/reservas/{{ reserva.id }}/cancelar"
+            data-regra="{{ r.regra }}" data-prazo-integral="{{ r.prazo_reembolso_integral }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+        <input type="hidden" name="valor_exibido" value="{{ '%.2f'|format(r.valor_reembolso) }}">
+        <button type="submit" id="btnConfirmarCancelamento" class="btn btn-danger btn-block">
+          Confirmar cancelamento
+        </button>
+      </form>
+      <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 10px;">
+        Ao confirmar, a reserva passa para CANCELADA,
+        {% if r.valor_reembolso > 0 %}o reembolso de {{ dinheiro(r.valor_reembolso) }} é solicitado ao serviço de pagamento{% else %}nenhum valor é reembolsado{% endif %}
+        e o {{ previa.outra_parte }} é avisado por e-mail.
+      </p>
+      <a href="/reservas/{{ reserva.id }}" class="btn btn-secondary btn-block" style="margin-top: 10px;">Manter a reserva</a>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/cancelamento.js"></script>
+{% endblock %}

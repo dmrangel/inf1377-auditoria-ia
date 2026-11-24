@@ -18,7 +18,7 @@ A avaliação é sobre especificação e auditoria, não sobre o código em si. 
 | [Gabriel Emile](alunos/gabriel-emile/README.md) | Busca e visualização de acomodações | Claude (Opus 5.5) | Codex (GPT-6.2 Sol) | Concluído |
 | [Julia Kymie](alunos/julia-kymie/README.md) | Gerenciamento de acomodações | Claude (Opus 5.5) | Codex (GPT-6.2 Sol) | Concluído |
 | [Lis Villanova](alunos/lis-villanova/README.md) | Fluxo de Configurações de Usuário | Claude (Opus 5.5) | ChatGPT | Concluído |
-| [Pedro Loschi](alunos/pedro-loschi/README.md) | – | – | – | A fazer |
+| [Pedro Loschi](alunos/pedro-loschi/README.md) | Cancelamento e reembolso | Claude (Opus 5.5) | A definir | Geração concluída, auditoria pendente |
 | [Rafaela Bessa](alunos/rafaela-bessa/README.md) | Avaliação de estadia | Claude (Opus 5.5) | Gemini (Antigravity) | Concluído |
 
 ### Sugestão de divisão
