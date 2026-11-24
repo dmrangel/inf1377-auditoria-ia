@@ -15,8 +15,8 @@ A avaliação é sobre especificação e auditoria, não sobre o código em si. 
 | Integrante | Funcionalidade | IA geradora | IA auditora | Status |
 |---|---|---|---|---|
 | [Davi Rangel](alunos/davi-rangel/README.md) | Fluxo de reserva, pagamento e confirmação | Gemini 3.8 Flash | Claude (Opus 5.5) | Concluído |
-| [Gabriel Emile](alunos/gabriel-emile/README.md) | Busca e visualização de acomodações | Claude (Opus 5.5) | – | Em andamento |
-| [Julia Kymie](alunos/julia-kymie/README.md) | Gerenciamento de acomodações | Claude (Opus 5.5) | – | Em andamento |
+| [Gabriel Emile](alunos/gabriel-emile/README.md) | Busca e visualização de acomodações | Claude (Opus 5.5) | Codex (GPT-6.2 Sol) | Concluído |
+| [Julia Kymie](alunos/julia-kymie/README.md) | Gerenciamento de acomodações | Claude (Opus 5.5) | Codex (GPT-6.2 Sol) | Concluído |
 | [Lis Villanova](alunos/lis-villanova/README.md) | Fluxo de Configurações de Usuário | Claude (Opus 5.5) | ChatGPT | Concluído |
 | [Pedro Loschi](alunos/pedro-loschi/README.md) | – | – | – | A fazer |
 | [Rafaela Bessa](alunos/rafaela-bessa/README.md) | Avaliação de estadia | Claude (Opus 5.5) | Gemini (Antigravity) | Concluído |
@@ -76,5 +76,12 @@ As auditorias também revisam a especificação. Pontos que a ERS v1.2 não defi
 | Não diz o que fazer com pagamento recebido para reserva cancelada ou já paga | Fluxo de reserva (Davi) |
 | Não proíbe check-in no passado | Fluxo de reserva (Davi) |
 | Nenhum requisito diz que só o hóspede dono vê a própria reserva | Fluxo de reserva (Davi) |
+| UC08, UC09, UC06 e UC07 não têm descrição no PDF; o diagrama B.2 ainda traz o UC11 (confirmação pelo anfitrião), em conflito com o RF-20 | Busca (Gabriel), gerenciamento (Julia) |
+| Não define se a rua pode ser inferida pela busca pública nem quem vê o endereço depois da estadia (RNF-05) | Busca (Gabriel) |
+| Não define o instante inicial da reserva pendente nem se o dia do check-out conflita com o check-in de outra | Busca (Gabriel) |
+| Não define a hora exata do fim do prazo de avaliação nem se a média pública inclui avaliações não publicadas | Busca (Gabriel) |
+| Não define o efeito de editar ou desativar um anúncio que tem reservas | Gerenciamento (Julia) |
+| RF-10 não define a semântica dos bloqueios; o B.4 não tem tabelas de fotos nem de bloqueios | Gerenciamento (Julia) |
+| RF-07 não define formatos e limites dos campos; §3.3 não diz o que fazer com CEP indisponível ou falha no armazenamento | Gerenciamento (Julia) |
 
 Ao terminar a sua auditoria, acrescente aqui as lacunas que você encontrou.
