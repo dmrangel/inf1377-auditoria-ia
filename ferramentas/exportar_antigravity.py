@@ -4,7 +4,10 @@ O Antigravity grava cada conversa em
 %USERPROFILE%\.gemini\antigravity\brain\<id>\.system_generated\logs\transcript_full.jsonl
 
 Uso:
-    python exportar_antigravity.py <id-da-conversa> <arquivo-de-saida.md>
+    python exportar_antigravity.py <id-da-conversa> <arquivo-de-saida.md> [limite]
+
+O limite é quantos caracteres mostrar de cada resultado de ferramenta
+(padrão 2000; use 0 para não cortar nada).
 """
 import json
 import os
@@ -29,11 +32,17 @@ def resumir_chamada(chamada):
     return f"`{chamada['name']}` {alvo}".strip()
 
 
+def cortar(texto, limite):
+    if limite and len(texto) > limite:
+        return texto[:limite] + f"\n[... {len(texto) - limite} caracteres omitidos]"
+    return texto
+
+
 def cerca(texto):
     return "```\n" + texto.replace("```", "ˋˋˋ") + "\n```"
 
 
-def main(conversa_id, saida):
+def main(conversa_id, saida, limite=LIMITE_SAIDA):
     caminho = os.path.join(os.path.expanduser("~"), ".gemini", "antigravity", "brain",
                            conversa_id, ".system_generated", "logs", "transcript_full.jsonl")
     passos = [json.loads(linha) for linha in open(caminho, encoding="utf-8") if linha.strip()]
@@ -54,10 +63,14 @@ def main(conversa_id, saida):
                 linhas.append(f"- Ação: {resumir_chamada(chamada)}")
             if passo.get("tool_calls"):
                 linhas.append("")
+        elif passo["type"] == "SYSTEM_MESSAGE" and passo.get("content"):
+            texto = cortar(passo["content"].strip(), limite)
+            linhas += ["<details><summary>Mensagem do sistema "
+                       "(resultado de tarefa em segundo plano)</summary>", "",
+                       cerca(texto), "", "</details>", ""]
         elif passo["type"] == "GENERIC" and passo.get("content"):
             texto = passo["content"].strip()
-            if len(texto) > LIMITE_SAIDA:
-                texto = texto[:LIMITE_SAIDA] + f"\n[... {len(texto) - LIMITE_SAIDA} caracteres omitidos]"
+            texto = cortar(texto, limite)
             linhas += ["<details><summary>Resultado da ação</summary>", "", cerca(texto), "",
                        "</details>", ""]
     with open(saida, "w", encoding="utf-8") as arquivo:
@@ -66,4 +79,5 @@ def main(conversa_id, saida):
 
 
 if __name__ == "__main__":
-    main(sys.argv[1], sys.argv[2])
+    limite = int(sys.argv[3]) if len(sys.argv) > 3 else LIMITE_SAIDA
+    main(sys.argv[1], sys.argv[2], limite)
