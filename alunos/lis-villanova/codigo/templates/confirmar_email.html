@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block titulo %}Confirmação de e-mail{% endblock %}
+{% block conteudo %}
+<section class="cartao estreito">
+  {% if sucesso %}
+    <h1>E-mail confirmado</h1>
+    <p class="aviso aviso-sucesso" role="status">Obrigado, {{ nome }}! Seu e-mail foi confirmado.</p>
+  {% else %}
+    <h1>Não foi possível confirmar</h1>
+    <p class="aviso aviso-erro" role="alert">{{ erro }}</p>
+    <p>Entre na sua conta e peça um novo e-mail de confirmação em Configurações.</p>
+  {% endif %}
+  <p><a class="botao" href="{{ url_for('paginas.inicio') }}">Ir para o início</a></p>
+</section>
+{% endblock %}
+{% block ajuda %}
+  <p>Esta tela mostra o resultado do link de confirmação enviado por e-mail. Cada link vale por
+     7 dias e uma única vez. Para receber outro, entre e vá em <strong>Configurações</strong>.</p>
+{% endblock %}

@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block titulo %}Início{% endblock %}
+{% block conteudo %}
+<section class="cartao">
+  {% if usuario_atual %}
+    <h1>Olá, {{ usuario_atual.nome }}!</h1>
+    <p>
+      Você está usando a plataforma como
+      <strong>{{ "hóspede e anfitrião" if usuario_atual.ehAnfitriao else "hóspede" }}</strong>.
+    </p>
+    {% if not usuario_atual.emailConfirmado %}
+      <p class="aviso aviso-alerta">Seu e-mail ainda não foi confirmado. Veja em
+        <a href="{{ url_for('paginas.configuracoes') }}">Configurações</a>.</p>
+    {% endif %}
+    <p><a class="botao" href="{{ url_for('paginas.configuracoes') }}">Ir para Configurações</a></p>
+  {% else %}
+    <h1>Encontre e anuncie hospedagens</h1>
+    <p>Crie sua conta para reservar estadias ou anunciar o seu espaço.</p>
+    <p class="acoes">
+      <a class="botao" href="{{ url_for('paginas.cadastro') }}">Criar conta</a>
+      <a class="botao botao-secundario" href="{{ url_for('paginas.login') }}">Entrar</a>
+    </p>
+  {% endif %}
+  <p class="nota">A busca de acomodações e as reservas ficam fora deste módulo.</p>
+</section>
+{% endblock %}
+{% block ajuda %}
+  <p>Esta é a tela inicial. Para usar a plataforma, crie uma conta em <strong>Cadastrar</strong>
+     ou entre com seu e-mail e senha em <strong>Entrar</strong>.</p>
+  <p>Depois de entrar, em <strong>Configurações</strong> você muda seus dados, sua senha e pode
+     se tornar anfitrião.</p>
+{% endblock %}

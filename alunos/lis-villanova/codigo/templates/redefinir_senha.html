@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block titulo %}Nova senha{% endblock %}
+{% block conteudo %}
+<section class="cartao estreito">
+  <h1>Criar nova senha</h1>
+  <div id="mensagem" class="aviso" role="status" aria-live="polite" hidden></div>
+
+  <form id="form-redefinir" novalidate>
+    <input type="hidden" name="token" value="{{ token }}">
+    <div class="campo">
+      <label for="novaSenha">Nova senha</label>
+      <input id="novaSenha" name="novaSenha" type="password" autocomplete="new-password" required
+             aria-describedby="dica-senha erro-novaSenha">
+      <p class="dica" id="dica-senha">De 8 a 128 caracteres, com pelo menos uma letra e um número.</p>
+      <p class="erro" id="erro-novaSenha"></p>
+    </div>
+    <div class="campo">
+      <label for="confirmacaoSenha">Repita a nova senha</label>
+      <input id="confirmacaoSenha" name="confirmacaoSenha" type="password"
+             autocomplete="new-password" required aria-describedby="erro-confirmacaoSenha">
+      <p class="erro" id="erro-confirmacaoSenha"></p>
+    </div>
+    <button class="botao" type="submit">Salvar nova senha</button>
+  </form>
+  <p><a href="{{ url_for('paginas.recuperar_senha') }}">Pedir um novo link</a></p>
+</section>
+{% endblock %}
+{% block ajuda %}
+  <p>Escolha uma senha nova com 8 a 128 caracteres, com pelo menos uma letra e um número.</p>
+  <p>Se o link tiver expirado ou já tiver sido usado, peça um novo em <strong>Pedir um novo link</strong>.</p>
+  <p>Ao salvar, sua conta é desbloqueada e você sai de todos os aparelhos.</p>
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='js/recuperacao.js') }}"></script>{% endblock %}

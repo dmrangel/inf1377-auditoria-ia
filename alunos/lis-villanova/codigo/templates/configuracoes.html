@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+{% block titulo %}Configurações{% endblock %}
+{% block conteudo %}
+{% set u = usuario_atual %}
+<h1>Configurações</h1>
+<div id="mensagem" class="aviso" role="status" aria-live="polite" hidden></div>
+
+<div class="grade">
+  {# UC03 / RF-05 #}
+  <section class="cartao" aria-labelledby="t-dados">
+    <h2 id="t-dados">Meus dados</h2>
+    <form id="form-perfil" novalidate>
+      <div class="campo">
+        <label for="nome">Nome completo</label>
+        <input id="nome" name="nome" autocomplete="name" value="{{ u.nome }}" maxlength="100"
+               aria-describedby="erro-nome">
+        <p class="erro" id="erro-nome"></p>
+      </div>
+      <div class="campo">
+        <label for="telefone">Telefone com DDD</label>
+        <input id="telefone" name="telefone" type="tel" autocomplete="tel" value="{{ u.telefone }}"
+               aria-describedby="erro-telefone">
+        <p class="erro" id="erro-telefone"></p>
+      </div>
+      <div class="campo">
+        <label for="email-atual">E-mail</label>
+        <input id="email-atual" type="email" value="{{ u.email }}" readonly
+               aria-describedby="dica-email">
+        <p class="dica" id="dica-email">O e-mail é usado para entrar e não pode ser alterado nesta versão.</p>
+      </div>
+      <p>
+        {% if u.emailConfirmado %}
+          <span class="selo selo-ok">E-mail confirmado</span>
+        {% else %}
+          <span class="selo selo-alerta">E-mail não confirmado</span>
+          <button type="button" class="link" id="botao-reenviar">Reenviar e-mail de confirmação</button>
+        {% endif %}
+      </p>
+      <p class="nota">Conta criada em <time class="data" datetime="{{ u.dataCadastro }}">{{ u.dataCadastro }}</time>.</p>
+      <button class="botao" type="submit">Salvar dados</button>
+    </form>
+  </section>
+
+  {# UC03: troca de senha #}
+  <section class="cartao" aria-labelledby="t-senha">
+    <h2 id="t-senha">Alterar senha</h2>
+    <form id="form-senha" novalidate>
+      <div class="campo">
+        <label for="senhaAtual">Senha atual</label>
+        <input id="senhaAtual" name="senhaAtual" type="password" autocomplete="current-password"
+               aria-describedby="erro-senhaAtual">
+        <p class="erro" id="erro-senhaAtual"></p>
+      </div>
+      <div class="campo">
+        <label for="novaSenha">Nova senha</label>
+        <input id="novaSenha" name="novaSenha" type="password" autocomplete="new-password"
+               aria-describedby="dica-nova erro-novaSenha">
+        <p class="dica" id="dica-nova">De 8 a 128 caracteres, com pelo menos uma letra e um número.</p>
+        <p class="erro" id="erro-novaSenha"></p>
+      </div>
+      <div class="campo">
+        <label for="confirmacaoSenha">Repita a nova senha</label>
+        <input id="confirmacaoSenha" name="confirmacaoSenha" type="password"
+               autocomplete="new-password" aria-describedby="erro-confirmacaoSenha">
+        <p class="erro" id="erro-confirmacaoSenha"></p>
+      </div>
+      <button class="botao" type="submit">Alterar senha</button>
+    </form>
+  </section>
+
+  {# RF-06 / UC04 #}
+  <section class="cartao" aria-labelledby="t-anfitriao">
+    <h2 id="t-anfitriao">Papel de anfitrião</h2>
+    {% if u.ehAnfitriao %}
+      <p><span class="selo selo-ok">Anfitrião</span>
+         Você é anfitrião desde <time class="data" datetime="{{ u.dataAtivacaoAnfitriao }}">{{ u.dataAtivacaoAnfitriao }}</time>.</p>
+      <p class="nota">Você continua podendo reservar estadias como hóspede.</p>
+    {% else %}
+      <p>Hoje você usa a plataforma como hóspede. Ative o papel de anfitrião para anunciar
+         espaços, sem perder sua conta de hóspede.</p>
+      <p class="nota">Nesta versão, o papel de anfitrião não pode ser desativado depois.</p>
+      <button type="button" class="botao" id="botao-anfitriao">Quero ser anfitrião</button>
+    {% endif %}
+  </section>
+
+  {# RNF-17 (LGPD) #}
+  <section class="cartao" aria-labelledby="t-privacidade">
+    <h2 id="t-privacidade">Privacidade e dados pessoais</h2>
+    <p>Baixe uma cópia dos dados pessoais que guardamos sobre você.</p>
+    <p><a class="botao botao-secundario" href="{{ url_for('api.exportar_dados') }}" download>Exportar meus dados</a></p>
+
+    <h3>Excluir conta</h3>
+    <p>A exclusão é definitiva e apaga seus dados pessoais.</p>
+    <form id="form-excluir" novalidate>
+      <div class="campo">
+        <label for="senha-excluir">Confirme com sua senha</label>
+        <input id="senha-excluir" name="senha" type="password" autocomplete="current-password"
+               aria-describedby="erro-senha">
+        <p class="erro" id="erro-senha"></p>
+      </div>
+      <button class="botao botao-perigo" type="submit">Excluir minha conta</button>
+    </form>
+  </section>
+</div>
+{% endblock %}
+{% block ajuda %}
+  <p><strong>Meus dados:</strong> altere nome e telefone e clique em <strong>Salvar dados</strong>.
+     O e-mail não pode ser alterado nesta versão.</p>
+  <p><strong>Alterar senha:</strong> informe a senha atual e a nova. Você continua conectado aqui,
+     mas sai de outros aparelhos.</p>
+  <p><strong>Papel de anfitrião:</strong> ativa na mesma conta a opção de anunciar espaços.</p>
+  <p><strong>Privacidade:</strong> exporte seus dados em um arquivo ou exclua a conta.</p>
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='js/configuracoes.js') }}"></script>{% endblock %}

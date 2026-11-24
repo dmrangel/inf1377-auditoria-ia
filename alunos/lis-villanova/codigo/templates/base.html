@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="referrer" content="no-referrer">
+  <title>{% block titulo %}Plataforma de Hospedagem{% endblock %} · Hospedagem</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/estilo.css') }}">
+</head>
+<body>
+  <a class="pular" href="#conteudo">Pular para o conteúdo</a>
+
+  <header class="topo">
+    <a class="marca" href="{{ url_for('paginas.inicio') }}">Hospedagem</a>
+    <nav aria-label="Principal">
+      <ul>
+        {% if usuario_atual %}
+          <li><a href="{{ url_for('paginas.configuracoes') }}">Configurações</a></li>
+          <li><button type="button" class="link" id="botao-sair">Sair</button></li>
+        {% else %}
+          <li><a href="{{ url_for('paginas.login') }}">Entrar</a></li>
+          <li><a href="{{ url_for('paginas.cadastro') }}">Cadastrar</a></li>
+        {% endif %}
+        {% if config.SIMULACAO_VISIVEL %}
+          <li><a href="{{ url_for('paginas.emails') }}">E-mails (simulação)</a></li>
+        {% endif %}
+        <li><button type="button" class="botao-ajuda" id="botao-ajuda" aria-haspopup="dialog">Ajuda</button></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main id="conteudo">
+    {% block conteudo %}{% endblock %}
+  </main>
+
+  {# Seção 3.1: botão de ajuda em todas as telas. #}
+  <dialog id="dialogo-ajuda" aria-labelledby="titulo-ajuda">
+    <h2 id="titulo-ajuda">Ajuda</h2>
+    <div class="texto-ajuda">
+      {% block ajuda %}
+        <p>Use o menu no topo para entrar, criar uma conta ou mudar suas configurações.</p>
+      {% endblock %}
+    </div>
+    <form method="dialog"><button class="botao">Fechar</button></form>
+  </dialog>
+
+  <script src="{{ url_for('static', filename='js/comum.js') }}"></script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

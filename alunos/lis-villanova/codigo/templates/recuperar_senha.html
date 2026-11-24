@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block titulo %}Recuperar senha{% endblock %}
+{% block conteudo %}
+<section class="cartao estreito">
+  <h1>Recuperar senha</h1>
+  <p>Informe o e-mail da sua conta. Enviaremos um link para criar uma senha nova.</p>
+  <div id="mensagem" class="aviso" role="status" aria-live="polite" hidden></div>
+
+  <form id="form-recuperar" novalidate>
+    <div class="campo">
+      <label for="email">E-mail</label>
+      <input id="email" name="email" type="email" autocomplete="email" required
+             value="{{ email }}" aria-describedby="erro-email">
+      <p class="erro" id="erro-email"></p>
+    </div>
+    <button class="botao" type="submit">Enviar link</button>
+  </form>
+  <p><a href="{{ url_for('paginas.login') }}">Voltar para Entrar</a></p>
+</section>
+{% endblock %}
+{% block ajuda %}
+  <p>Digite o e-mail da sua conta e clique em <strong>Enviar link</strong>. O link chega por e-mail,
+     vale por 1 hora e só pode ser usado uma vez. Se pedir outro link, o anterior deixa de valer.</p>
+  <p>Por segurança, a resposta é a mesma tenha ou não uma conta com o e-mail informado.</p>
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='js/recuperacao.js') }}"></script>{% endblock %}

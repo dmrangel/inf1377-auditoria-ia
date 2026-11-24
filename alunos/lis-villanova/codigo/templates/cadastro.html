@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block titulo %}Cadastrar{% endblock %}
+{% block conteudo %}
+<section class="cartao estreito">
+  <h1>Criar conta</h1>
+  <div id="mensagem" class="aviso" role="status" aria-live="polite" hidden></div>
+
+  {# novalidate: a validação que vale é a do servidor; assim os erros dele aparecem na tela. #}
+  <form id="form-cadastro" novalidate>
+    <div class="campo">
+      <label for="nome">Nome completo</label>
+      <input id="nome" name="nome" autocomplete="name" required maxlength="100"
+             aria-describedby="erro-nome">
+      <p class="erro" id="erro-nome"></p>
+    </div>
+    <div class="campo">
+      <label for="email">E-mail</label>
+      <input id="email" name="email" type="email" autocomplete="email" required
+             aria-describedby="erro-email">
+      <p class="erro" id="erro-email"></p>
+    </div>
+    <div class="campo">
+      <label for="telefone">Telefone com DDD</label>
+      <input id="telefone" name="telefone" type="tel" autocomplete="tel" required
+             placeholder="(21) 99999-8888" aria-describedby="dica-telefone erro-telefone">
+      <p class="dica" id="dica-telefone">Fixo ou celular, com DDD.</p>
+      <p class="erro" id="erro-telefone"></p>
+    </div>
+    <div class="campo">
+      <label for="senha">Senha</label>
+      <input id="senha" name="senha" type="password" autocomplete="new-password" required
+             aria-describedby="dica-senha erro-senha">
+      <p class="dica" id="dica-senha">De 8 a 128 caracteres, com pelo menos uma letra e um número.</p>
+      <p class="erro" id="erro-senha"></p>
+    </div>
+    <div class="campo">
+      <label for="confirmacaoSenha">Repita a senha</label>
+      <input id="confirmacaoSenha" name="confirmacaoSenha" type="password"
+             autocomplete="new-password" required aria-describedby="erro-confirmacaoSenha">
+      <p class="erro" id="erro-confirmacaoSenha"></p>
+    </div>
+    <div class="campo campo-caixa">
+      <input id="aceitouTermos" name="aceitouTermos" type="checkbox"
+             aria-describedby="erro-aceitouTermos">
+      <label for="aceitouTermos">Li e aceito os termos de uso e a política de privacidade.</label>
+      <p class="erro" id="erro-aceitouTermos"></p>
+    </div>
+    <button class="botao" type="submit">Criar conta</button>
+  </form>
+  <p>Já tem conta? <a href="{{ url_for('paginas.login') }}">Entrar</a></p>
+</section>
+{% endblock %}
+{% block ajuda %}
+  <p>Preencha nome, e-mail, telefone com DDD e uma senha. A senha precisa ter de 8 a 128
+     caracteres, com pelo menos uma letra e um número.</p>
+  <p>É preciso aceitar os termos de uso e a política de privacidade para criar a conta.</p>
+  <p>Depois do cadastro enviamos um e-mail de confirmação. Você já pode entrar mesmo antes
+     de confirmar.</p>
+  <p>Se o e-mail já tiver conta, use <strong>Esqueci minha senha</strong> na tela de entrada.</p>
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='js/cadastro.js') }}"></script>{% endblock %}

@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block titulo %}E-mails simulados{% endblock %}
+{% block conteudo %}
+<h1>Caixa de saída do e-mail (simulação)</h1>
+<p class="nota">Esta página existe só para testes: mostra os e-mails que o serviço simulado
+   "enviou". Em produção ela não existiria.</p>
+
+<section class="cartao">
+  <div class="campo campo-caixa">
+    <input type="checkbox" id="simular-falha">
+    <label for="simular-falha">Simular falha do serviço de e-mail (fora do ar)</label>
+  </div>
+  <button type="button" class="botao botao-secundario" id="botao-atualizar">Atualizar lista</button>
+</section>
+
+<div id="mensagem" class="aviso" role="status" aria-live="polite" hidden></div>
+<ol id="lista-emails" class="lista-emails" reversed></ol>
+<template id="modelo-email">
+  <li class="cartao">
+    <p class="nota"><span data-campo="enviadoEm"></span> · para <strong data-campo="para"></strong></p>
+    <h2 data-campo="assunto"></h2>
+    <p data-campo="corpo"></p>
+    <p data-campo="link-area" hidden><a data-campo="link" class="botao">Abrir link</a></p>
+  </li>
+</template>
+{% endblock %}
+{% block ajuda %}
+  <p>Os e-mails de confirmação, recuperação de senha e avisos aparecem aqui, do mais novo para o
+     mais antigo. Use <strong>Abrir link</strong> para seguir o link como se tivesse aberto o e-mail.</p>
+  <p>Marque <strong>Simular falha</strong> para testar o que acontece quando o serviço de e-mail
+     está fora do ar.</p>
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='js/emails.js') }}"></script>{% endblock %}
