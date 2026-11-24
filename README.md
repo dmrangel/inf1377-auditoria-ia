@@ -18,7 +18,7 @@ A avaliação é sobre especificação e auditoria, não sobre o código em si. 
 | [Gabriel Emile](alunos/gabriel-emile/README.md) | Busca e visualização de acomodações | Claude (Opus 5.5) | Codex (GPT-6.2 Sol) | Concluído |
 | [Julia Kymie](alunos/julia-kymie/README.md) | Gerenciamento de acomodações | Claude (Opus 5.5) | Codex (GPT-6.2 Sol) | Concluído |
 | [Lis Villanova](alunos/lis-villanova/README.md) | Fluxo de Configurações de Usuário | Claude (Opus 5.5) | ChatGPT | Concluído |
-| [Pedro Loschi](alunos/pedro-loschi/README.md) | Cancelamento e reembolso | Claude (Opus 5.5) | A definir | Geração concluída, auditoria pendente |
+| [Pedro Loschi](alunos/pedro-loschi/README.md) | Cancelamento e reembolso | Claude (Opus 5.5) | ChatGPT | Concluído |
 | [Rafaela Bessa](alunos/rafaela-bessa/README.md) | Avaliação de estadia | Claude (Opus 5.5) | Gemini (Antigravity) | Concluído |
 
 ### Sugestão de divisão
@@ -83,5 +83,9 @@ As auditorias também revisam a especificação. Pontos que a ERS v1.2 não defi
 | Não define o efeito de editar ou desativar um anúncio que tem reservas | Gerenciamento (Julia) |
 | RF-10 não define a semântica dos bloqueios; o B.4 não tem tabelas de fotos nem de bloqueios | Gerenciamento (Julia) |
 | RF-07 não define formatos e limites dos campos; §3.3 não diz o que fazer com CEP indisponível ou falha no armazenamento | Gerenciamento (Julia) |
+| Não define a hora do check-in nem o fuso para contar as 48 horas da RN-05 | Cancelamento (Pedro) |
+| O B.4 não guarda o valor das diárias contratadas, e o reembolso de 50% passa a depender do preço atual | Cancelamento (Pedro) |
+| Não define se dá para cancelar durante a estadia nem como estornar o valor já repassado ao anfitrião (RN-08) | Cancelamento (Pedro) |
+| O UC12 não tem fluxo alternativo para falha do gateway de reembolso; o UC17 aparece no B.2 sem descrição | Cancelamento (Pedro) |
 
 Ao terminar a sua auditoria, acrescente aqui as lacunas que você encontrou.
