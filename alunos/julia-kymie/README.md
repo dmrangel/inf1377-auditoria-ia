@@ -1,14 +1,14 @@
-# Julia Kymie: [funcionalidade]
+# Julia Kymie: Gerenciamento de acomodações
 
 [← Voltar à página do grupo](../../README.md)
 
 | | |
 |---|---|
-| **Funcionalidade** | [nome da funcionalidade] |
-| **Onde está na ERS** | [seções, regras de negócio e casos de uso] |
+| **Funcionalidade** | Gerenciamento de acomodações |
+| **Onde está na ERS** | 4.2 (RF-07 a RF-11); 3.3 (serviço de CEP e armazenamento de arquivos); RNF-11; UC05, UC06 e UC07 |
 | **IA geradora** | [ferramenta e modelo, por exemplo Gemini 3.8 Flash no Antigravity] |
 | **IA auditora** | [ferramenta e modelo, diferente da geradora] |
-| **Status** | A fazer |
+| **Status** | Em andamento |
 
 ## Resultado
 

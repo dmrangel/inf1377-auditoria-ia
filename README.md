@@ -16,7 +16,7 @@ A avaliação é sobre especificação e auditoria, não sobre o código em si. 
 |---|---|---|---|---|
 | [Davi Rangel](alunos/davi-rangel/README.md) | Fluxo de reserva, pagamento e confirmação | Gemini 3.8 Flash | Claude (Opus 5.5) | Concluído |
 | [Gabriel Emile](alunos/gabriel-emile/README.md) | – | – | – | A fazer |
-| [Julia Kymie](alunos/julia-kymie/README.md) | – | – | – | A fazer |
+| [Julia Kymie](alunos/julia-kymie/README.md) | Gerenciamento de acomodações | – | – | Em andamento |
 | [Lis Villanova](alunos/lis-villanova/README.md) | Fluxo de Configurações de Usuário | Claude (Opus 5.5) | ChatGPT | Concluído |
 | [Pedro Loschi](alunos/pedro-loschi/README.md) | – | – | – | A fazer |
 | [Rafaela Bessa](alunos/rafaela-bessa/README.md) | – | – | – | A fazer |
