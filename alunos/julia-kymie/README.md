@@ -6,13 +6,13 @@
 |---|---|
 | **Funcionalidade** | Gerenciamento de acomodações |
 | **Onde está na ERS** | 4.2 (RF-07 a RF-11); 3.3 (serviço de CEP e armazenamento de arquivos); RNF-11; UC05, UC06 e UC07 |
-| **IA geradora** | [ferramenta e modelo, por exemplo Gemini 3.8 Flash no Antigravity] |
-| **IA auditora** | [ferramenta e modelo, diferente da geradora] |
-| **Status** | Em andamento |
+| **IA geradora** | Claude Code (app de desktop), modelo Claude Opus 5.5 |
+| **IA auditora** | A definir (diferente da geradora) |
+| **Status** | Em andamento: geração concluída, auditoria pendente |
 
 ## Resultado
 
-[Um parágrafo: o que a IA entregou, quantos problemas a auditoria encontrou, quais os mais graves e se algum veio de uma lacuna da ERS.]
+Geração concluída (conduzida por Gabriel Emile no Claude Code): código em `codigo/`, com 114 testes pytest (todos passando), tabela de rastreabilidade (`codigo/RASTREABILIDADE.md`) e 18 ambiguidades da ERS registradas (`codigo/AMBIGUIDADES.md`). A auditoria ainda não foi feita.
 
 ## Arquivos
 
@@ -30,8 +30,8 @@ julia-kymie/
 
 ## Registro da interação com a IA
 
-- **Geração:** [link para a conversa exportada em `interacao_ia/`]
-- **Auditoria:** [link para a conversa exportada em `interacao_ia/`]
+- **Geração:** [`interacao_ia/conversa_geracao.md`](interacao_ia/conversa_geracao.md). O prompt enviado é o de [`prompts/geracao.md`](prompts/geracao.md), adaptado ao Claude Code: em vez de anexar a ERS, aponta para o PDF no repositório e acrescenta regras (não abrir as pastas dos outros, gravar só em `codigo/`, não commitar). A primeira mensagem traz uma nota de contexto antes do prompt.
+- **Auditoria:** pendente.
 
 ## Auditoria
 
@@ -45,4 +45,11 @@ julia-kymie/
 
 ## Como rodar
 
-[Comandos para rodar o código gerado e os testes.]
+```bash
+cd alunos/julia-kymie/codigo
+pip install -r requirements.txt
+python app.py          # http://127.0.0.1:5000
+python -m pytest       # testes, com banco separado do app
+```
+
+Os cenários (caminho feliz e erros) estão em [`codigo/README.md`](codigo/README.md).

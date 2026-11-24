@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block titulo %}Anúncios publicados{% endblock %}
+{% block conteudo %}
+<h1>Anúncios publicados</h1>
+<p class="explicacao">Demonstração do que um visitante veria: só anúncios ativos e só o bairro (o endereço exato fica oculto até a reserva ser confirmada). A busca completa (RF-12 a RF-16) não faz parte desta funcionalidade.</p>
+<ul id="vitrine" class="cartoes" aria-busy="true"><li>Carregando…</li></ul>
+{% endblock %}
+{% block ajuda %}<p>Esta página mostra os anúncios ativos de todos os anfitriões. Anúncios desativados não aparecem aqui.</p>{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='js/vitrine.js') }}"></script>{% endblock %}

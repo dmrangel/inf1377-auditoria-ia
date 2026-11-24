@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Hospeda - Encontre uma acomodação</title>
+  <link rel="stylesheet" href="/static/css/estilo.css">
+</head>
+<body>
+  <a class="pular" href="#conteudo">Pular para o conteúdo</a>
+  <header class="topo">
+    <a href="/" class="logo">Hospeda</a>
+    <div id="usuario-teste" class="usuario-teste" aria-live="polite"></div>
+  </header>
+
+  <main id="conteudo">
+    <section class="hero">
+      <h1>Encontre onde ficar</h1>
+      <p>Informe a cidade, o bairro ou a rua, as datas e quantas pessoas vão se hospedar.</p>
+    </section>
+
+    <!-- UC08, passo 1 / ERS 3.1: barra de busca da tela inicial -->
+    <form id="form-busca" class="busca" novalidate aria-describedby="dica-busca">
+      <p id="dica-busca" class="dica largo" style="grid-column:1/-1">Campos com * são obrigatórios. Informe o bairro, a rua ou os dois.</p>
+      <div class="campo largo">
+        <label for="cidade">Cidade *</label>
+        <input id="cidade" name="cidade" autocomplete="address-level2" required maxlength="100" placeholder="Ex.: Rio de Janeiro">
+      </div>
+      <div class="campo">
+        <label for="estado">Estado (UF)</label>
+        <input id="estado" name="estado" maxlength="2" autocomplete="address-level1" placeholder="Ex.: RJ">
+      </div>
+      <div class="campo">
+        <label for="bairro">Bairro</label>
+        <input id="bairro" name="bairro" maxlength="100" placeholder="Ex.: Copacabana">
+      </div>
+      <div class="campo largo">
+        <label for="rua">Rua</label>
+        <input id="rua" name="rua" maxlength="100" placeholder="Ex.: Barata Ribeiro">
+      </div>
+      <div class="campo">
+        <label for="checkin">Check-in *</label>
+        <input id="checkin" name="checkin" type="date" required>
+      </div>
+      <div class="campo">
+        <label for="checkout">Check-out *</label>
+        <input id="checkout" name="checkout" type="date" required>
+      </div>
+      <div class="campo">
+        <label for="hospedes">Hóspedes *</label>
+        <input id="hospedes" name="hospedes" type="number" min="1" max="50" step="1" value="1" required inputmode="numeric">
+      </div>
+      <div class="campo">
+        <button class="botao" type="submit">Buscar</button>
+      </div>
+    </form>
+    <div id="mensagem-busca" role="alert"></div>
+
+    <section aria-labelledby="titulo-exemplo">
+      <h2 id="titulo-exemplo">Quer testar?</h2>
+      <p>Os dados de exemplo têm acomodações no Rio de Janeiro (Copacabana, Ipanema, Leblon, Santa Teresa), em São Paulo (Pinheiros, Vila Madalena) e em Petrópolis (Vale das Videiras).</p>
+      <button type="button" class="botao secundario" id="preencher-exemplo">Preencher com o cenário de demonstração</button>
+    </section>
+  </main>
+
+  <a class="botao-ajuda" href="/ajuda" aria-label="Ajuda" title="Ajuda">?</a>
+  <footer>Projeto acadêmico INF1377 - dados fictícios.</footer>
+  <script src="/static/js/comum.js"></script>
+  <script src="/static/js/form_busca.js"></script>
+  <script src="/static/js/inicio.js"></script>
+</body>
+</html>

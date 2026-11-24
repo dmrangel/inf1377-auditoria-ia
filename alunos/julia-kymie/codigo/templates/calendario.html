@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block titulo %}Calendário{% endblock %}
+{% block atributos_body %}data-id="{{ acomodacao_id }}"{% endblock %}
+{% block conteudo %}
+<div class="cabecalho-pagina">
+  <h1>Calendário <span id="nome-acomodacao" class="subtitulo"></span></h1>
+  <a class="botao" href="{{ url_for('paginas.lista') }}">Voltar</a>
+</div>
+
+<form id="form-periodo" class="painel" novalidate>
+  <p class="explicacao">Escolha as noites (a data é a noite que começa nesse dia). Você pode digitar as datas ou clicar em dois dias do calendário.</p>
+  <div class="linha">
+    <div class="campo"><label for="inicio">Primeira noite</label><input id="inicio" name="inicio" type="date" required></div>
+    <div class="campo"><label for="fim">Última noite</label><input id="fim" name="fim" type="date" required></div>
+  </div>
+  <div class="acoes-form">
+    <button type="submit" class="botao primario" data-acao="bloquear">Bloquear noites</button>
+    <button type="submit" class="botao" data-acao="desbloquear">Desbloquear noites</button>
+  </div>
+</form>
+
+<div class="navegacao-mes">
+  <button type="button" class="botao" id="mes-anterior" aria-label="Mês anterior">‹</button>
+  <h2 id="titulo-mes" aria-live="polite"></h2>
+  <button type="button" class="botao" id="mes-seguinte" aria-label="Próximo mês">›</button>
+</div>
+<ul class="legenda" aria-label="Legenda">
+  <li><span class="amostra livre"></span> Livre</li>
+  <li><span class="amostra bloqueada"></span> Bloqueada</li>
+  <li><span class="amostra reservada"></span> Reservada</li>
+  <li><span class="amostra passada"></span> Já passou</li>
+</ul>
+<div id="grade" class="grade-calendario" role="grid" aria-labelledby="titulo-mes"></div>
+{% endblock %}
+{% block ajuda %}
+<p>Bloqueie as noites em que o espaço não estará disponível. Noites bloqueadas não podem ser reservadas.</p>
+<ul>
+  <li>Noites que já têm reserva (pendente ou confirmada) não podem ser bloqueadas. Para liberá-las, cancele a reserva.</li>
+  <li>Datas que já passaram não podem ser alteradas.</li>
+  <li>No máximo 366 noites por vez.</li>
+</ul>
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='js/calendario.js') }}"></script>{% endblock %}

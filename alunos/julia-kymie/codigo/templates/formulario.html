@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% block titulo %}{{ "Anunciar espaço" if modo == "nova" else "Editar acomodação" }}{% endblock %}
+{% block atributos_body %}data-modo="{{ modo }}" data-id="{{ acomodacao_id or '' }}"{% endblock %}
+{% block conteudo %}
+<div class="cabecalho-pagina">
+  <h1 id="titulo-pagina">{{ "Anunciar espaço" if modo == "nova" else "Editar acomodação" }}</h1>
+  {% if modo == "editar" %}
+  <div class="acoes">
+    <span id="status-anuncio" class="selo"></span>
+    <a class="botao" href="{{ url_for('paginas.calendario', acomodacao_id=acomodacao_id) }}">Calendário</a>
+    <button type="button" class="botao" id="alternar-ativo"></button>
+  </div>
+  {% endif %}
+</div>
+
+<div id="resumo-erros" class="resumo-erros" tabindex="-1" hidden></div>
+
+<form id="form-acomodacao" novalidate>
+  <fieldset>
+    <legend>Endereço</legend>
+    <p class="explicacao">Informe o CEP e preenchemos o resto. Se o CEP não for encontrado, preencha à mão.</p>
+    <div class="linha">
+      <div class="campo">
+        <label for="cep">CEP <span class="obrigatorio" aria-hidden="true">*</span></label>
+        <input id="cep" name="cep" inputmode="numeric" autocomplete="postal-code" maxlength="9" required placeholder="00000-000">
+      </div>
+      <div class="campo campo-botao">
+        <button type="button" class="botao" id="buscar-cep">Buscar CEP</button>
+      </div>
+    </div>
+    <p id="aviso-cep" class="aviso" aria-live="polite"></p>
+    <div class="linha">
+      <div class="campo largo"><label for="rua">Rua <span class="obrigatorio" aria-hidden="true">*</span></label><input id="rua" name="rua" maxlength="200" required></div>
+      <div class="campo estreito"><label for="numero">Número <span class="obrigatorio" aria-hidden="true">*</span></label><input id="numero" name="numero" maxlength="20" required></div>
+    </div>
+    <div class="linha">
+      <div class="campo"><label for="bairro">Bairro <span class="obrigatorio" aria-hidden="true">*</span></label><input id="bairro" name="bairro" maxlength="100" required></div>
+      <div class="campo"><label for="cidade">Cidade <span class="obrigatorio" aria-hidden="true">*</span></label><input id="cidade" name="cidade" maxlength="100" required></div>
+      <div class="campo estreito"><label for="estado">UF <span class="obrigatorio" aria-hidden="true">*</span></label><input id="estado" name="estado" maxlength="2" required></div>
+    </div>
+  </fieldset>
+
+  <fieldset>
+    <legend>Sobre o espaço</legend>
+    <div class="campo"><label for="titulo">Título <span class="obrigatorio" aria-hidden="true">*</span></label><input id="titulo" name="titulo" maxlength="100" required></div>
+    <div class="campo"><label for="descricao">Descrição <span class="obrigatorio" aria-hidden="true">*</span></label><textarea id="descricao" name="descricao" rows="4" maxlength="5000" required></textarea></div>
+    <div class="linha">
+      <div class="campo"><label for="precoNoite">Preço por noite (R$) <span class="obrigatorio" aria-hidden="true">*</span></label><input id="precoNoite" name="precoNoite" inputmode="decimal" required placeholder="350,00"></div>
+      <div class="campo"><label for="capacidadeMaxima">Capacidade máxima (hóspedes) <span class="obrigatorio" aria-hidden="true">*</span></label><input id="capacidadeMaxima" name="capacidadeMaxima" type="number" min="1" max="50" required></div>
+    </div>
+    <div class="linha">
+      <div class="campo"><label for="quartos">Quartos <span class="obrigatorio" aria-hidden="true">*</span></label><input id="quartos" name="quartos" type="number" min="0" max="50" required></div>
+      <div class="campo"><label for="banheiros">Banheiros <span class="obrigatorio" aria-hidden="true">*</span></label><input id="banheiros" name="banheiros" type="number" min="1" max="50" required></div>
+      <div class="campo"><label for="camas">Camas <span class="obrigatorio" aria-hidden="true">*</span></label><input id="camas" name="camas" type="number" min="1" max="100" required></div>
+    </div>
+    <div class="campo"><label for="regras">Regras da casa <span class="obrigatorio" aria-hidden="true">*</span></label><textarea id="regras" name="regras" rows="3" maxlength="2000" required placeholder="Ex.: proibido fumar, sem festas"></textarea></div>
+  </fieldset>
+
+  <fieldset id="secao-fotos">
+    <legend>Fotos</legend>
+    <p class="explicacao">De 5 a 30 fotos, JPEG ou PNG, até 10 MB cada. A primeira é a capa.</p>
+    <div class="campo">
+      <label for="fotos">Escolher fotos</label>
+      <input id="fotos" name="fotos" type="file" accept="image/jpeg,image/png" multiple>
+    </div>
+    <p id="contador-fotos" class="contador" aria-live="polite"></p>
+    <ul id="galeria" class="galeria"></ul>
+  </fieldset>
+
+  <div class="acoes-form">
+    <button type="submit" class="botao primario" id="enviar">{{ "Publicar anúncio" if modo == "nova" else "Salvar alterações" }}</button>
+    <a class="botao" href="{{ url_for('paginas.lista') }}">Voltar</a>
+  </div>
+</form>
+{% endblock %}
+{% block ajuda %}
+<p>Campos com * são obrigatórios.</p>
+<ul>
+  <li><strong>CEP</strong>: ao buscar, rua, bairro, cidade e UF são preenchidos. Se o CEP não existir ou o serviço estiver fora do ar, preencha o endereço à mão.</li>
+  <li><strong>Fotos</strong>: de 5 a 30, só JPEG ou PNG, até 10 MB cada. Na edição, as fotos são salvas na hora em que você adiciona ou remove.</li>
+  <li><strong>Preço</strong>: use vírgula para os centavos, por exemplo 350,00. O novo preço vale só para reservas futuras.</li>
+  <li>O endereço exato só é mostrado ao hóspede depois que a reserva é confirmada. Antes disso, aparece só o bairro.</li>
+</ul>
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='js/formulario.js') }}"></script>{% endblock %}

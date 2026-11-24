@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Anúncio - Hospeda</title>
+  <link rel="stylesheet" href="/static/css/estilo.css">
+</head>
+<body>
+  <a class="pular" href="#conteudo">Pular para o conteúdo</a>
+  <header class="topo">
+    <a href="/" class="logo">Hospeda</a>
+    <div id="usuario-teste" class="usuario-teste" aria-live="polite"></div>
+  </header>
+
+  <main id="conteudo">
+    <p><a id="voltar" href="/">← Voltar aos resultados</a></p>
+    <div id="estado-pagina" role="status" class="carregando">Carregando anúncio…</div>
+
+    <article id="anuncio" hidden>
+      <h1 id="titulo"></h1>
+      <p id="subtitulo" class="local"></p>
+      <div id="aviso-dono"></div>
+
+      <section aria-label="Fotos" id="galeria" class="galeria"></section>
+
+      <div class="colunas-anuncio">
+        <div>
+          <section aria-labelledby="h-sobre">
+            <h2 id="h-sobre">Sobre o espaço</h2>
+            <ul id="fatos" class="fatos"></ul>
+            <p id="anfitriao"></p>
+            <p id="descricao"></p>
+          </section>
+
+          <section aria-labelledby="h-regras">
+            <h2 id="h-regras">Regras da casa</h2>
+            <p id="regras"></p>
+          </section>
+
+          <section aria-labelledby="h-local">
+            <h2 id="h-local">Localização</h2>
+            <p id="endereco"></p>
+            <div id="mapa" class="mapa"></div>
+          </section>
+
+          <section aria-labelledby="h-calendario">
+            <h2 id="h-calendario">Calendário de disponibilidade</h2>
+            <p class="dica">Cada dia representa a noite que começa nele. Um dia ocupado ainda pode ser o dia de saída de uma nova estadia.</p>
+            <ul class="legenda">
+              <li><span style="background:#e8f5ec;border:1px solid #1e6b35"></span>Livre</li>
+              <li><span style="background:#e4e6ea;border:1px solid #5c6470"></span>Ocupado</li>
+              <li><span style="outline:2px solid #b3194a"></span>Período escolhido</li>
+            </ul>
+            <div class="calendario-nav">
+              <button type="button" class="botao secundario" id="mes-anterior">← Meses anteriores</button>
+              <button type="button" class="botao secundario" id="mes-seguinte">Próximos meses →</button>
+            </div>
+            <div id="calendario-msg" role="status"></div>
+            <div id="calendario" class="meses"></div>
+          </section>
+
+          <section aria-labelledby="h-avaliacoes">
+            <h2 id="h-avaliacoes">Avaliações</h2>
+            <p id="resumo-avaliacoes"></p>
+            <ul id="avaliacoes" class="avaliacoes"></ul>
+          </section>
+        </div>
+
+        <aside aria-labelledby="h-periodo">
+          <div class="caixa">
+            <h2 id="h-periodo" style="margin-top:0"></h2>
+            <div id="periodo"></div>
+            <p class="dica">A reserva é feita em outra etapa do sistema (fora desta funcionalidade).</p>
+          </div>
+        </aside>
+      </div>
+    </article>
+  </main>
+
+  <a class="botao-ajuda" href="/ajuda" aria-label="Ajuda" title="Ajuda">?</a>
+  <footer>Projeto acadêmico INF1377 - dados fictícios.</footer>
+  <script src="/static/js/comum.js"></script>
+  <script src="/static/js/anuncio.js"></script>
+</body>
+</html>

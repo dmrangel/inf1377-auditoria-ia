@@ -1,18 +1,18 @@
-# Gabriel Emile: [funcionalidade]
+# Gabriel Emile: Busca e visualização de acomodações
 
 [← Voltar à página do grupo](../../README.md)
 
 | | |
 |---|---|
-| **Funcionalidade** | [nome da funcionalidade] |
-| **Onde está na ERS** | [seções, regras de negócio e casos de uso] |
-| **IA geradora** | [ferramenta e modelo, por exemplo Gemini 3.8 Flash no Antigravity] |
-| **IA auditora** | [ferramenta e modelo, diferente da geradora] |
-| **Status** | A fazer |
+| **Funcionalidade** | Busca e visualização de acomodações |
+| **Onde está na ERS** | 4.3 (RF-12 a RF-16); RNF-01; RNF-05; UC08 e UC09 |
+| **IA geradora** | Claude Code (app de desktop), modelo Claude Opus 5.5 |
+| **IA auditora** | A definir (diferente da geradora) |
+| **Status** | Em andamento: geração concluída, auditoria pendente |
 
 ## Resultado
 
-[Um parágrafo: o que a IA entregou, quantos problemas a auditoria encontrou, quais os mais graves e se algum veio de uma lacuna da ERS.]
+Geração concluída: código em `codigo/`, com 112 testes pytest (todos passando), tabela de rastreabilidade (`codigo/RASTREABILIDADE.md`) e 21 ambiguidades da ERS registradas (`codigo/AMBIGUIDADES.md`). A auditoria ainda não foi feita.
 
 ## Arquivos
 
@@ -30,8 +30,8 @@ gabriel-emile/
 
 ## Registro da interação com a IA
 
-- **Geração:** [link para a conversa exportada em `interacao_ia/`]
-- **Auditoria:** [link para a conversa exportada em `interacao_ia/`]
+- **Geração:** [`interacao_ia/conversa_geracao.md`](interacao_ia/conversa_geracao.md). A conversa foi aberta a partir de outra sessão do Claude Code, por isso a primeira mensagem traz uma nota de contexto antes do prompt de [`prompts/geracao.md`](prompts/geracao.md).
+- **Auditoria:** pendente.
 
 ## Auditoria
 
@@ -45,4 +45,11 @@ gabriel-emile/
 
 ## Como rodar
 
-[Comandos para rodar o código gerado e os testes.]
+```bash
+cd alunos/gabriel-emile/codigo
+pip install -r requirements.txt
+python app.py          # http://127.0.0.1:5000
+python -m pytest       # testes, com banco separado do app
+```
+
+Os cenários (caminho feliz e erros) estão em [`codigo/README.md`](codigo/README.md).

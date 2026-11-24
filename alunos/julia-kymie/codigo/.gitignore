@@ -1,0 +1,5 @@
+instancia/
+amostras/
+__pycache__/
+.pytest_cache/
+.coverage

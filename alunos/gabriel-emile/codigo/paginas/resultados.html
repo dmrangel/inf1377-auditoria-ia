@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Resultados da busca - Hospeda</title>
+  <link rel="stylesheet" href="/static/css/estilo.css">
+</head>
+<body>
+  <a class="pular" href="#resultados">Pular para os resultados</a>
+  <header class="topo">
+    <a href="/" class="logo">Hospeda</a>
+    <div id="usuario-teste" class="usuario-teste" aria-live="polite"></div>
+  </header>
+
+  <main id="conteudo">
+    <h1>Acomodações disponíveis</h1>
+
+    <form id="form-busca" class="busca" novalidate aria-label="Alterar busca">
+      <div class="campo largo">
+        <label for="cidade">Cidade *</label>
+        <input id="cidade" name="cidade" maxlength="100" required autocomplete="address-level2">
+      </div>
+      <div class="campo">
+        <label for="estado">Estado (UF)</label>
+        <input id="estado" name="estado" maxlength="2" autocomplete="address-level1">
+      </div>
+      <div class="campo">
+        <label for="bairro">Bairro</label>
+        <input id="bairro" name="bairro" maxlength="100">
+      </div>
+      <div class="campo">
+        <label for="rua">Rua</label>
+        <input id="rua" name="rua" maxlength="100">
+      </div>
+      <div class="campo">
+        <label for="checkin">Check-in *</label>
+        <input id="checkin" name="checkin" type="date" required>
+      </div>
+      <div class="campo">
+        <label for="checkout">Check-out *</label>
+        <input id="checkout" name="checkout" type="date" required>
+      </div>
+      <div class="campo">
+        <label for="hospedes">Hóspedes *</label>
+        <input id="hospedes" name="hospedes" type="number" min="1" max="50" step="1" required inputmode="numeric">
+      </div>
+      <div class="campo">
+        <button class="botao" type="submit">Buscar</button>
+      </div>
+    </form>
+
+    <div class="layout-resultados">
+      <!-- RF-14: filtros por faixa de preço e quantidade de quartos, banheiros e camas -->
+      <form id="form-filtros" class="filtros" novalidate aria-labelledby="titulo-filtros">
+        <h2 id="titulo-filtros" style="margin:0">Filtros</h2>
+        <fieldset>
+          <legend>Preço por noite (R$)</legend>
+          <div class="campo">
+            <label for="preco_min">Mínimo</label>
+            <input id="preco_min" name="preco_min" inputmode="decimal" placeholder="0">
+          </div>
+          <div class="campo">
+            <label for="preco_max">Máximo</label>
+            <input id="preco_max" name="preco_max" inputmode="decimal" placeholder="sem limite">
+          </div>
+        </fieldset>
+        <fieldset>
+          <legend>Quantidade mínima</legend>
+          <div class="campo">
+            <label for="quartos">Quartos</label>
+            <select id="quartos" name="quartos"></select>
+          </div>
+          <div class="campo">
+            <label for="banheiros">Banheiros</label>
+            <select id="banheiros" name="banheiros"></select>
+          </div>
+          <div class="campo">
+            <label for="camas">Camas</label>
+            <select id="camas" name="camas"></select>
+          </div>
+        </fieldset>
+        <div class="campo" style="flex-direction:row; gap:.5rem; flex-wrap:wrap">
+          <button class="botao" type="submit">Aplicar filtros</button>
+          <button class="botao secundario" type="button" id="limpar-filtros">Limpar</button>
+        </div>
+      </form>
+
+      <section id="resultados" aria-labelledby="resumo" tabindex="-1">
+        <div class="barra-resultados">
+          <p id="resumo" aria-live="polite" class="carregando">Carregando…</p>
+          <!-- RF-16: ordenar por preço ou por nota -->
+          <div class="campo">
+            <label for="ordenar">Ordenar por</label>
+            <select id="ordenar" name="ordenar" form="form-filtros">
+              <option value="relevancia">Relevância (melhor avaliadas)</option>
+              <option value="preco_asc">Menor preço</option>
+              <option value="preco_desc">Maior preço</option>
+              <option value="nota_desc">Maior nota</option>
+            </select>
+          </div>
+        </div>
+        <div id="mensagem" role="alert"></div>
+        <ul id="lista" class="lista"></ul>
+        <nav id="paginacao" class="paginacao" aria-label="Páginas de resultados"></nav>
+      </section>
+    </div>
+  </main>
+
+  <a class="botao-ajuda" href="/ajuda" aria-label="Ajuda" title="Ajuda">?</a>
+  <footer>Projeto acadêmico INF1377 - dados fictícios.</footer>
+  <script src="/static/js/comum.js"></script>
+  <script src="/static/js/form_busca.js"></script>
+  <script src="/static/js/resultados.js"></script>
+</body>
+</html>

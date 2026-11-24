@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block titulo %}{% endblock %} · Plataforma de Hospedagem</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/estilo.css') }}">
+</head>
+<body {% block atributos_body %}{% endblock %}>
+  <a class="pular" href="#conteudo">Pular para o conteúdo</a>
+  <header class="topo">
+    <a class="marca" href="{{ url_for('paginas.lista') }}">Hospedagem · Anfitrião</a>
+    <nav aria-label="Principal">
+      <a href="{{ url_for('paginas.lista') }}">Minhas acomodações</a>
+      <a href="{{ url_for('paginas.nova') }}">Anunciar espaço</a>
+      <a href="{{ url_for('paginas.vitrine') }}">Anúncios publicados</a>
+    </nav>
+    <div class="sessao">
+      <label for="seletor-usuario">Logado como <span class="dica">(login simulado)</span></label>
+      <select id="seletor-usuario"></select>
+    </div>
+    <button type="button" class="botao-ajuda" id="abrir-ajuda" aria-haspopup="dialog">Ajuda</button>
+  </header>
+
+  <main id="conteudo" tabindex="-1">
+    <div id="mensagens" role="status" aria-live="polite"></div>
+    {% block conteudo %}{% endblock %}
+  </main>
+
+  <dialog id="ajuda" aria-labelledby="ajuda-titulo">
+    <h2 id="ajuda-titulo">Ajuda</h2>
+    <div class="ajuda-texto">{% block ajuda %}{% endblock %}</div>
+    <form method="dialog"><button type="submit">Fechar</button></form>
+  </dialog>
+
+  <script src="{{ url_for('static', filename='js/comum.js') }}"></script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>
